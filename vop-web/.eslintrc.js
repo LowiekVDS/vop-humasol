@@ -22,5 +22,6 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+        "formatjs/enforce-id": 2
     }
 }
