@@ -1,6 +1,6 @@
 #pragma once
 #include "Constants.h"
-#if TARGET == GCC
+#if TARGET == ESP32
 #include <SPI.h>
 #include <LoRa.h>
 #else
