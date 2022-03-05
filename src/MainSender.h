@@ -1,5 +1,6 @@
-#include "constants.h"
-#ifndef DEBUG
+#pragma once
+#include "Constants.h"
+#if TARGET == GCC
 #include <SPI.h>
 #include <LoRa.h>
 #else
@@ -12,12 +13,12 @@ Sender sender;
 
 
 void setup() {
-  #ifndef DEBUG
-  Serial.begin(SERIAL_BAUD_RATE);
-  #else
+  logInit();
 
-  #endif
   sender.add(new BatteryLevelEntry(25));
+  sender.add(new BatteryLevelEntry(85));
+  sender.add(new BatteryLevelEntry(14));
+  sender.add(new BatteryLevelEntry(63));
   sender.add(new PumpLevelEntry(45));
 
   sender.send();
@@ -27,7 +28,7 @@ void loop() {
 }
 
 
-#ifdef DEBUG
+#if TARGET == GCC
 int main(){
   setup();
   while (true){

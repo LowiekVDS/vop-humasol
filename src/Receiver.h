@@ -8,9 +8,12 @@ class Receiver {
     private:
         void (*batteryLevelCallback)(BatteryLevelEntry*);
         void (*pumpLevelCallback)(PumpLevelEntry*);
+
+        std::vector<TLVEntry*> m_entries;
+
     public:
         void parse(uint8_t* buffer, uint8_t payloadSize);
-        void print_results();
+        void process();
 
     public:
         void setBatteryLevelCallback(void (*callback)(BatteryLevelEntry*)){ batteryLevelCallback = callback;};

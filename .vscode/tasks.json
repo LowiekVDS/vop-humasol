@@ -2,22 +2,25 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "build",
+			"label": "GCC: Build",
 			"type": "shell",
 			"command": "g++",
 			"args": [
                 "-g",
 				"${workspaceFolder}/src/*.cpp",
+				"${workspaceFolder}/src/Entries/*.cpp",
 				"-o",
-				"${workspaceFolder}/src/bin/out"
+				"${workspaceFolder}/src/bin/out",
+				"-D",
+				"TARGET=0"
 			],
 			"problemMatcher": []
 		},
 		{
-			"label": "run",
+			"label": "GCC: Run",
 			"type": "shell",
 			"command": "${workspaceFolder}/src/bin/out",
-			"dependsOn": ["build"]
+			"dependsOn": ["GCC: Build"]
 		}
 	]
 }

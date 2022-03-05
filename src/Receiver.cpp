@@ -1,44 +1,29 @@
 #include "Receiver.h"
 #include <stdint.h>
-#include "constants.h"
+#include "Constants.h"
 #include "./Entries/Type.h"
-#include "./Entries/Entries.h"
+#include "./Entries/TLVEntry.h"
+#include <iostream>
 
 void Receiver::parse(uint8_t* buffer, uint8_t payloadSize) {
     
-    uint8_t offset = 0;
+    uint8_t* pointer = &buffer[0];
 
-    while (offset<payloadSize) {
-        uint8_t type = *(uint8_t*)(&buffer[offset]);
+    while ((pointer-buffer)<payloadSize){
+        TLVEntry* e = TLVEntry::CreateFromType(*pointer);
+        e->decode(pointer);
+        m_entries.push_back(e);
 
-        switch (type)
-        {
-            case BATTERY_LEVEL:
-            {
-                BatteryLevelEntry* app_data = new BatteryLevelEntry();
-                app_data->length=*(uint8_t*)(&buffer[offset+1]);
-                app_data->level=*(uint8_t*)(&buffer[offset+2]);
-                batteryLevelCallback(app_data);
-                offset+=app_data->size();
-                break;
-            }
-            case PUMP_LEVEL:
-            {
-                PumpLevelEntry* app_data = new PumpLevelEntry(*(PumpLevelEntry*)&buffer[offset]);
-                app_data->length=*(uint8_t*)(&buffer[offset+1]);
-                app_data->level=*(uint8_t*)(&buffer[offset+2]);
-                pumpLevelCallback(app_data);
-                offset+=app_data->size();
-                break;
-            }
-            default:
-                break;
-            
-        }
+        e->print('\n');
     }
 
     
 }
-void Receiver::print_results(){
-    
+
+void Receiver::process() {
+    for (auto it = m_entries.begin(); it != m_entries.end(); ){
+        TLVEntry* entry = *it;
+        entry->process();
+        it = m_entries.erase(it);
+    }
 }

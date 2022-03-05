@@ -1,7 +1,7 @@
 #define SENDER 1
 #define RECEIVER 2
 
-#define DEVICE SENDER 
+#define DEVICE RECEIVER 
 
 #if DEVICE == SENDER
   #include "./MainSender.h"

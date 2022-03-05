@@ -5,15 +5,23 @@
 #include "TLVEntry.h"
 struct PumpLevelEntry : public TLVEntry{
     public:
-        uint8_t length;
         uint8_t level;
     public:
-        PumpLevelEntry(uint8_t level = 0): TLVEntry(PUMP_LEVEL), length(1), level(level){};
+        PumpLevelEntry(uint8_t level = 0): TLVEntry(PUMP_LEVEL, 1), level(level){};
+        ~PumpLevelEntry(){};
+
+    public:
+        void encode(uint8_t*& pointer) override;
+        void decode(uint8_t*& pointer) override;
+
+    public:
+        void process() override;
+
 
     int size() override { return sizeof(type) + sizeof(length) + sizeof(level);};
     
     public:
-        void print() {
-            printf("Type: %s\nLength: %d\nLevel: %d\n", "PumpLevelEntry", (uint8_t)this->length, (uint8_t)this->level);
+        void print(char end=' ') override {
+            log("Type: %s\nLength: %d\nLevel: %d\n%c", "PumpLevelEntry", (uint8_t)this->length, (uint8_t)this->level, end);
         } 
 };

@@ -1,5 +1,6 @@
-#include "constants.h"
-#ifndef DEBUG
+#pragma once
+#include "Constants.h"
+#if TARGET == ESP32
 #include <SPI.h>
 #include <LoRa.h>
 #else
@@ -10,39 +11,21 @@
 
 Receiver receiver;
 
-void battery_callback(BatteryLevelEntry* bat) {
-  std::cout << "BatteryPacket Received!" << std::endl;
-  bat->print();
-    std::cout << std::endl;
-
-}
-
-
-void pump_callback(PumpLevelEntry* pump) {
-  std::cout << "PumpPacket Received!" << std::endl;
-  pump->print();
-  std::cout << std::endl;
-}
 
 void setup() {
-  #ifndef DEBUG
-  Serial.begin(SERIAL_BAUD_RATE);
-  #else
-
-  #endif
+  logInit();
   
-  uint8_t buffer[6] = {0x01, 0x01, 0x19, 0x02, 0x01,0x2d};
-  receiver.setBatteryLevelCallback(&battery_callback);
-  receiver.setPumpLevelCallback(&pump_callback);
+  uint8_t buffer[6] = {0x01, 0x01, 0x19, 0x02, 0x01,0x5f};
+  
   receiver.parse(buffer, 6);
-  receiver.print_results();
+  receiver.process();
 }
 
 void loop() {
 }
 
 
-#ifdef DEBUG
+#if TARGET == GCC
 int main(){
   setup();
   while (true){

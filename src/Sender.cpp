@@ -1,9 +1,11 @@
-#include "constants.h"
+#include "Constants.h"
 #include "Sender.h"
 #include "./Entries/Type.h"
 #include "./Entries/Entries.h"
-#ifndef DEBUG   
+#include "./Utils.h"
+#if TARGET == ESP32
 #include <LoRa.h>
+#include <SPI.h>
 #else
 #include <stdio.h>
 #include <string.h>
@@ -15,50 +17,30 @@ void Sender::add(TLVEntry *entry){
 }
 
 void Sender::send(){
-    #ifndef DEBUG
+    #if TARGET == ESP32
     LoRa.beginPacket();
     #endif
 
     uint8_t buffer[MAX_PACKET_LENGTH] = {0}; // Sets buffer to 0
+    uint8_t* pointer = &buffer[0];
+    uint8_t buffer_size = 0;
 
     auto it = m_entries.begin();
-    uint8_t offset = 0;
+
     while (it != m_entries.end()){
         TLVEntry *entry = *it;
-        *(&buffer[offset]) = entry->type;
-        offset++;
-
-        switch(entry->type) {
-            case BATTERY_LEVEL:
-                {BatteryLevelEntry* bat_entry = (BatteryLevelEntry*)entry;
-
-                *(&buffer[offset]) = bat_entry->length;
-                offset++;
-
-                *(&buffer[offset]) = bat_entry->level;
-                offset++;}
-
-                break;
-            case PUMP_LEVEL:
-                {PumpLevelEntry* pump_entry = (PumpLevelEntry*)entry;
-
-                *(&buffer[offset]) = pump_entry->length;
-                offset++;
-
-                *(&buffer[offset]) = pump_entry->level;
-                offset++;}
-                break;
-        }
+        entry->encode(pointer);
+        buffer_size += entry->size();
         delete entry;
         it = m_entries.erase(it);
     }
-    #ifndef DEBUG
-    LoRa.write((uint8_t*)buffer, offset);
+    #if TARGET == ESP32
+    LoRa.write((uint8_t*)buffer, (size_t)buffer_size);
 
     LoRa.endPacket();
     #endif
     
-    #ifdef DEBUG
+    #if TARGET == GCC
     #if 0
     Serial.println("Sent the following packet:");
     for (int i = 0; i < offset; i++){
@@ -66,12 +48,10 @@ void Sender::send(){
         Serial.print(' ');
     }
     #else
-    std::cout << "Sent the following packet:" << std::endl;
-    for (int i = 0; i < offset; i++){
-        //std::cout << std::hex << "0x" << (unsigned long)buffer[i] << " ";
-        printf ("%02x " ,(unsigned int)buffer[i]);
+    log("Sent the following packet:");
+    for (int i = 0; i < buffer_size; i++){
+        log("%02x " ,(unsigned int)buffer[i]);
     }
-    std::cout << std::dec << std::endl;
     #endif
     #endif
 }

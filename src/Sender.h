@@ -1,6 +1,5 @@
 #pragma once
 
-// #include <LoRa.h>
 #include <vector>
 #include "Entries/TLVEntry.h"
 
