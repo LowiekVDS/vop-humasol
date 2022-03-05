@@ -1,13 +1,15 @@
 #pragma once
 
-#include "Entries/TLVEntry.h"
 // #include <LoRa.h>
 #include <vector>
+#include "Entries/TLVEntry.h"
 
 class Sender {
     private:
-        std::vector<TLVEntry*> entries;
+        std::vector<TLVEntry*> m_entries;
     public:
-        void add(TLVEntry *entry);
+        //void add_battery_level(uint8_t);
+        //void add_battery_level(uint8_t);
+        void add(TLVEntry* entrty);
         void send();
 };

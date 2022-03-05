@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "g++",
+			"args": [
+                "-g",
+				"${workspaceFolder}/src/*.cpp",
+				"-o",
+				"${workspaceFolder}/src/bin/out"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "run",
+			"type": "shell",
+			"command": "${workspaceFolder}/src/bin/out",
+			"dependsOn": ["build"]
+		}
+	]
+}

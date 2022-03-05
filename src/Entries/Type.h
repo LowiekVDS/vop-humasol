@@ -1,6 +1,4 @@
 #pragma once
 
-enum Type{
-    BATTERY_LEVEL,
-    PUMP_LEVEL,
-};
+#define BATTERY_LEVEL 1
+#define PUMP_LEVEL 2
