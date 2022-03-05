@@ -1,6 +1,6 @@
-import { Button } from "@mui/material";
 import React from "react";
 import { FormattedMessage } from "react-intl";
+import Button from "../components/Button";
 
 function MainView() {
   return (
@@ -21,29 +21,16 @@ function MainView() {
         />
       </p>
 
-      <div className="grid grid-cols-2 w-9/12 gap-4 mt-16 text-center items-center mx-auto">
-        <a
-          href="#/configure"
-          className="aspect-square flex bg-amber-300 hover:bg-amber-700 flex-col text-center items-center object-center justify-center"
-        >
-          <p className="uppercase font-bold">
-            <FormattedMessage
-              id="configure"
-              defaultMessage={"configure"}
-            ></FormattedMessage>
-          </p>
-        </a>
-        <a
-          href="#/monitor"
-          className="aspect-square bg-amber-300 flex hover:bg-amber-700 flex-col text-center items-center object-center justify-center"
-        >
-          <p className="uppercase font-bold">
-            <FormattedMessage
-              id="monitor"
-              defaultMessage={"monitor"}
-            ></FormattedMessage>
-          </p>
-        </a>
+      <div className="grid w-1/2 gap-4 mt-16 text-center items-center mx-auto">
+        <Button onClick={() => window.location.href = "#/configure"}>
+          <FormattedMessage defaultMessage={"configure"} id={"configure"} />
+        </Button>
+        <Button onClick={() => window.location.href = "#/monitor"}>
+          <FormattedMessage defaultMessage={"monitor"} id={"monitor"} />
+        </Button>
+        <Button className="mt-6" color="error">
+          <FormattedMessage defaultMessage={"restart"} id={"restart"} />
+        </Button>
       </div>
     </>
   );

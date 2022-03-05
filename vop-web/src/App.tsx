@@ -5,6 +5,8 @@ import Header from "./components/Header";
 import MainView from "./views/Main";
 import PageNotFound from "./views/PageNotFound";
 import React from "react";
+import "./index.css";
+import Configure from "./views/Configure";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <HashRouter>
           <Routes>
             <Route path="/" element={<MainView />} />
+            {/* <Route path="/monitor" element={<Monitor/>} /> */}
+            <Route path="/configure" element={<Configure/>} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </HashRouter>

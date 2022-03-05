@@ -22,6 +22,8 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+        "react/react-in-jsx-scope": 0,
+        "@typescript-eslint/no-var-requires": 0,
         "formatjs/enforce-id": 2
     }
 }
