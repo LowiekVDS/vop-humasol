@@ -9,11 +9,13 @@
 #include "Sender.h"
 #include "./Entries/Entries.h"
 
-Sender sender;
 
+Sender sender;
 
 void setup() {
   logInit();
+
+  sender.AESenabled(false);
 
   sender.add(new BatteryLevelEntry(25));
   sender.add(new BatteryLevelEntry(85));

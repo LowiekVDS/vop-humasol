@@ -3,6 +3,8 @@
 #include "./Entries/Type.h"
 #include "./Entries/Entries.h"
 #include "./Utils.h"
+#include "./Encryption/AES.h"
+#include <math.h>
 #if TARGET == ESP32
 #include <LoRa.h>
 #include <SPI.h>
@@ -14,44 +16,58 @@
 
 void Sender::add(TLVEntry *entry){
     m_entries.push_back(entry);
+    m_bufferSize+=entry->size();
 }
 
 void Sender::send(){
-    #if TARGET == ESP32
-    LoRa.beginPacket();
-    #endif
+    if (m_AES)
+        m_bufferSize = roundUp(m_bufferSize, 16); // Pad with zeros for AES encryption
 
-    uint8_t buffer[MAX_PACKET_LENGTH] = {0}; // Sets buffer to 0
-    uint8_t* pointer = &buffer[0];
-    uint8_t buffer_size = 0;
+    m_buffer = new uint8_t[m_bufferSize] {0}; // Sets buffer to 0;
+    uint8_t* pointer = &m_buffer[0];
 
     auto it = m_entries.begin();
 
     while (it != m_entries.end()){
         TLVEntry *entry = *it;
         entry->encode(pointer);
-        buffer_size += entry->size();
         delete entry;
         it = m_entries.erase(it);
     }
+    if (m_AES)
+        encrypt();
+
     #if TARGET == ESP32
-    LoRa.write((uint8_t*)buffer, (size_t)buffer_size);
+    LoRa.beginPacket();
+
+    LoRa.write((uint8_t*)m_buffer, (size_t)m_bufferSize);
 
     LoRa.endPacket();
     #endif
+
+    delete[] m_buffer;
     
-    #if TARGET == GCC
-    #if 0
+    #if TARGET == ESP32
     Serial.println("Sent the following packet:");
-    for (int i = 0; i < offset; i++){
-        Serial.print((unsigned long)buffer[i], HEX);
+    for (int i = 0; i < m_bufferSize; i++){
+        Serial.print((unsigned long)m_buffer[i], HEX);
         Serial.print(' ');
     }
     #else
     log("Sent the following packet:");
-    for (int i = 0; i < buffer_size; i++){
-        log("%02x " ,(unsigned int)buffer[i]);
+    for (int i = 0; i < m_bufferSize; i++){
+        log("0x%02x, " , m_buffer[i]);
     }
     #endif
-    #endif
+}
+
+void Sender::encrypt() {
+    uint8_t key[16] = AES_KEY;
+    uint8_t init_vector[16] = AES_IV;
+
+    AES aes(AESKeyLength::AES_128);
+    uint8_t* cypher_text = aes.EncryptCBC(&m_buffer[0], m_bufferSize, &key[0], &init_vector[0]);
+
+    delete[] m_buffer;
+    m_buffer = cypher_text;
 }

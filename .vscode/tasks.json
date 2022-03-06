@@ -9,10 +9,11 @@
                 "-g",
 				"${workspaceFolder}/src/*.cpp",
 				"${workspaceFolder}/src/Entries/*.cpp",
+				"${workspaceFolder}/src/Encryption/*.cpp",
 				"-o",
 				"${workspaceFolder}/src/bin/out",
 				"-D",
-				"TARGET=0"
+				"TARGET=0",
 			],
 			"problemMatcher": []
 		},

@@ -9,26 +9,34 @@
 #include "Receiver.h"
 #include "./Entries/Entries.h"
 
-Receiver receiver;
-
-
-void setup() {
+void setup()
+{
   logInit();
-  
-  uint8_t buffer[6] = {0x01, 0x01, 0x19, 0x02, 0x01,0x5f};
-  
-  receiver.parse(buffer, 6);
+  Receiver receiver;
+
+#if 1
+  receiver.m_buffer = new uint8_t[16]{0x80, 0xe7, 0xa3, 0x1f, 0xe1, 0x48, 0xbb, 0x37, 0xea, 0x27, 0x40, 0xa5, 0x8c, 0xa8, 0x20, 0x7c};
+  receiver.m_bufferSize = 16;
+  receiver.AESenabled(true);
+#else
+  receiver.m_buffer = new uint8_t[15]{0x01, 0x01, 0x19, 0x01, 0x01, 0x55, 0x01, 0x01, 0x0e, 0x01, 0x01, 0x3f, 0x02, 0x01, 0x2d};
+  receiver.m_bufferSize = 15;
+  receiver.AESenabled(false);
+#endif
+  receiver.parse();
   receiver.process();
 }
 
-void loop() {
+void loop()
+{
 }
 
-
 #if TARGET == GCC
-int main(){
+int main()
+{
   setup();
-  while (true){
+  while (true)
+  {
     loop();
   }
 }

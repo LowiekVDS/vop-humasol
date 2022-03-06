@@ -6,16 +6,17 @@
 
 class Receiver {
     private:
-        void (*batteryLevelCallback)(BatteryLevelEntry*);
-        void (*pumpLevelCallback)(PumpLevelEntry*);
-
         std::vector<TLVEntry*> m_entries;
 
     public:
-        void parse(uint8_t* buffer, uint8_t payloadSize);
-        void process();
-
+        uint8_t* m_buffer;
+        uint8_t m_bufferSize;
+        bool m_AES = ENCRYPTION;
     public:
-        void setBatteryLevelCallback(void (*callback)(BatteryLevelEntry*)){ batteryLevelCallback = callback;};
-        void setPumpLevelCallback(void (*callback)(PumpLevelEntry*)){ pumpLevelCallback = callback;};
+        void decrypt();
+        void parse();
+        void process();
+    public:
+        inline void AESenabled(bool enabled) { this->m_AES = enabled; };
+
 };
