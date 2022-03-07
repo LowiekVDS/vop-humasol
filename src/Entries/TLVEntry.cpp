@@ -1,6 +1,5 @@
 #include "TLVEntry.h"
-#include "BatteryLevelEntry.h"
-#include "PumpLevelEntry.h"
+#include "Entries.h"
 
 TLVEntry *TLVEntry::CreateFromType(uint8_t type)
 {
@@ -16,6 +15,11 @@ TLVEntry *TLVEntry::CreateFromType(uint8_t type)
     {
         PumpLevelEntry *pump = new PumpLevelEntry();
         return (TLVEntry *)pump;
+    }
+    case PUMP_STATE:
+    {
+        PumpStateEntry *pump = new PumpStateEntry();
+        return (TLVEntry *) pump;
     }
     default:
     {

@@ -1,15 +1,22 @@
+#include "Constants.h"
+
 #define SENDER 1
 #define RECEIVER 2
 
 #define DEVICE RECEIVER 
 
-#if DEVICE == SENDER
-  #include "./MainSender.h"
+#if TARGET == ESP_32
+  #if DEVICE == SENDER
+    #include "./ESPSender.h"
+  #endif
+
+  #if DEVICE == RECEIVER
+    #include "./ESPReceiver.h"
+  #endif
+#elif TARGET == WINDOWS
+  #include "./Test.h"
 #endif
 
-#if DEVICE == RECEIVER
-  #include "./MainReceiver.h"
-#endif
 
 
 // #include <stdint.h>

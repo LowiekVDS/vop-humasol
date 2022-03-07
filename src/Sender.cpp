@@ -5,7 +5,7 @@
 #include "./Utils.h"
 #include "./Encryption/AES.h"
 #include <math.h>
-#if TARGET == ESP32
+#if TARGET == ESP_32
 #include <LoRa.h>
 #include <SPI.h>
 #else
@@ -19,8 +19,8 @@ void Sender::add(TLVEntry *entry){
     m_bufferSize+=entry->size();
 }
 
-void Sender::send(){
-    if (m_AES)
+uint8_t* Sender::send(uint8_t* bufferSize){
+    if (m_eType == EncryptionType::ENC_AES)
         m_bufferSize = roundUp(m_bufferSize, 16); // Pad with zeros for AES encryption
 
     m_buffer = new uint8_t[m_bufferSize] {0}; // Sets buffer to 0;
@@ -34,10 +34,9 @@ void Sender::send(){
         delete entry;
         it = m_entries.erase(it);
     }
-    if (m_AES)
-        encrypt();
+    encrypt();
 
-    #if TARGET == ESP32
+    #if TARGET == ESP_32
     LoRa.beginPacket();
 
     LoRa.write((uint8_t*)m_buffer, (size_t)m_bufferSize);
@@ -45,9 +44,9 @@ void Sender::send(){
     LoRa.endPacket();
     #endif
 
-    delete[] m_buffer;
+
     
-    #if TARGET == ESP32
+    #if TARGET == ESP_32
     Serial.println("Sent the following packet:");
     for (int i = 0; i < m_bufferSize; i++){
         Serial.print((unsigned long)m_buffer[i], HEX);
@@ -58,16 +57,28 @@ void Sender::send(){
     for (int i = 0; i < m_bufferSize; i++){
         log("0x%02x, " , m_buffer[i]);
     }
+    log("\n");
     #endif
+
+    uint8_t* buffer = nullptr;
+    if (bufferSize){
+        buffer = new uint8_t[m_bufferSize];
+        memcpy(buffer, m_buffer, m_bufferSize);
+        *bufferSize = m_bufferSize;
+    }
+
+    return buffer;
 }
 
 void Sender::encrypt() {
-    uint8_t key[16] = AES_KEY;
-    uint8_t init_vector[16] = AES_IV;
+    if (m_eType == EncryptionType::ENC_AES){
+        uint8_t key[16] = AES_KEY;
+        uint8_t init_vector[16] = AES_IV;
 
-    AES aes(AESKeyLength::AES_128);
-    uint8_t* cypher_text = aes.EncryptCBC(&m_buffer[0], m_bufferSize, &key[0], &init_vector[0]);
+        AES aes(AESKeyLength::AES_128);
+        uint8_t* cypher_text = aes.EncryptCBC(&m_buffer[0], m_bufferSize, &key[0], &init_vector[0]);
 
-    delete[] m_buffer;
-    m_buffer = cypher_text;
+        delete[] m_buffer;
+        m_buffer = cypher_text;
+    }
 }

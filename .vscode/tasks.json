@@ -6,22 +6,38 @@
 			"type": "shell",
 			"command": "g++",
 			"args": [
-                "-g",
+				"-g",
 				"${workspaceFolder}/src/*.cpp",
 				"${workspaceFolder}/src/Entries/*.cpp",
 				"${workspaceFolder}/src/Encryption/*.cpp",
 				"-o",
-				"${workspaceFolder}/src/bin/out",
+				"${workspaceFolder}/bin/test",
 				"-D",
-				"TARGET=0",
+				"WINDOWS=0",
+				"-D",
+				"ESP_32=1",
+				"-D",
+				"TARGET=WINDOWS"
 			],
 			"problemMatcher": []
 		},
 		{
 			"label": "GCC: Run",
 			"type": "shell",
-			"command": "${workspaceFolder}/src/bin/out",
-			"dependsOn": ["GCC: Build"]
+			"command": "${workspaceFolder}/bin/test",
+			"dependsOn": [
+				"GCC: Build"
+			],
+			"problemMatcher": []
+		},
+		{
+			"type": "PlatformIO",
+			"task": "Build",
+			"problemMatcher": [
+				"$platformio"
+			],
+			"group": "build",
+			"label": "PlatformIO: Build"
 		}
 	]
 }

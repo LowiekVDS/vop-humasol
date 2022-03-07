@@ -4,6 +4,8 @@
 #include "./Entries/BatteryLevelEntry.h"
 #include "./Entries/PumpLevelEntry.h"
 
+#include "./Encryption/EncryptionType.h"
+
 class Receiver {
     private:
         std::vector<TLVEntry*> m_entries;
@@ -11,12 +13,16 @@ class Receiver {
     public:
         uint8_t* m_buffer;
         uint8_t m_bufferSize;
-        bool m_AES = ENCRYPTION;
+        EncryptionType m_eType;
     public:
-        void decrypt();
+        Receiver(uint8_t* buffer, uint8_t bufferSize, EncryptionType eType = EncryptionType::ENC_AES) : m_buffer(buffer), m_bufferSize(bufferSize), m_eType(eType) {};
+        ~Receiver() { delete[] m_buffer;};
+    public:
         void parse();
         void process();
+    private:
+        void decrypt();
     public:
-        inline void AESenabled(bool enabled) { this->m_AES = enabled; };
+        inline void setEncryptionType(EncryptionType eType) { this->m_eType = eType; };
 
 };

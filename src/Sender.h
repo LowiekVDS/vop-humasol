@@ -3,6 +3,7 @@
 #include <vector>
 #include "Entries/TLVEntry.h"
 #include "Constants.h"
+#include "./Encryption/EncryptionType.h"
 
 class Sender {
     private:
@@ -10,12 +11,16 @@ class Sender {
     public:
         uint8_t* m_buffer;
         uint8_t m_bufferSize;
-        bool m_AES = ENCRYPTION;
+        EncryptionType m_eType;
+
+    public:
+        Sender(EncryptionType eType = EncryptionType::ENC_AES) : m_buffer(nullptr), m_bufferSize(0), m_eType(eType) {};
+        ~Sender(){ delete[] m_buffer; }
     public:
         void add(TLVEntry* entry);
-        void send();
+        uint8_t* send(uint8_t* buffer = nullptr);
     private:
         void encrypt();
     public:
-        inline void AESenabled(bool enabled) { this->m_AES = enabled; };
+        inline void setEncryptionType(EncryptionType eType) { this->m_eType = eType; };
 };

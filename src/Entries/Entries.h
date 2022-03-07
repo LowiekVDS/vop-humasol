@@ -1,3 +1,4 @@
 #pragma once
-#include "PumpLevelEntry.h"
 #include "BatteryLevelEntry.h"
+#include "PumpLevelEntry.h"
+#include "PumpStateEntry.h"

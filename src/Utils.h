@@ -2,22 +2,22 @@
 #include "Constants.h"
 #include <cstdarg>
 
-#if TARGET == GCC
+#if TARGET == WINDOWS
 #include <cstdio>
-#elif TARGET == ESP32
+#elif TARGET == ESP_32
 #include <Arduino.h> // For Serial
 #endif
 
 inline void logInit()
 {
-#if TARGET == ESP32
+#if TARGET == ESP_32
     Serial.begin(SERIAL_BAUD_RATE);
 #endif
 }
 
 inline void log(const char* format, ...)
 {
-    #if TARGET == GCC
+    #if TARGET == WINDOWS
     va_list vl;
     va_start(vl, format);
     vprintf(format, vl);
