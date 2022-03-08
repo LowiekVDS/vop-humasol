@@ -9,11 +9,14 @@ export interface RequiredOptions {
 }
 
 export interface RequiredOptionsData {
-  type?: "test"; //'pump' | 'floatswitch' | 'waterlevelsensor'
-  networkPassword?: string;
+  type?: "Receiver" | "Transmitter"; //'pump' | 'floatswitch' | 'waterlevelsensor'
+  password?: string;
 }
 
-const nodeTypes = [{ type: "test", label: "test" }];
+const nodeTypes = [
+  { type: "Receiver", label: "Receiver" },
+  { type: "Transmitter", label: "Transmitter" },
+];
 
 export default function RequiredOptions(props: RequiredOptions) {
   const [canContinue, setCanContinue] = useState<boolean>(false);
@@ -32,16 +35,15 @@ export default function RequiredOptions(props: RequiredOptions) {
       return;
     }
 
-    if (!data.networkPassword || data?.networkPassword == "") {
+    if (!data.password || data?.password == "") {
       return;
     }
-
-    console.log(data)
 
     setCanContinue(true);
   }, [data]);
 
   useEffect(() => {
+  
     let propData: any = {};
     if (props.data) {
       propData = props.data as any;
@@ -55,6 +57,7 @@ export default function RequiredOptions(props: RequiredOptions) {
       setData(propData as any);
     }
   }, [props.data]);
+
 
   return (
     <>
@@ -86,12 +89,16 @@ export default function RequiredOptions(props: RequiredOptions) {
           />
         </p>
         <TextField
-          value={data.networkPassword ?? ""}
-          onChange={(e) => updateData("networkPassword", e.target.value)}
+          value={data.password ?? ""}
+          onChange={(e) => updateData("password", e.target.value)}
           type="password"
         />
 
-        <Button onClick={() => props.onContinue(data)} disabled={!canContinue} className="mt-6">
+        <Button
+          onClick={() => props.onContinue(data)}
+          disabled={!canContinue}
+          className="mt-6"
+        >
           <FormattedMessage defaultMessage={"Continue"} id={"Continue"} />
         </Button>
       </div>

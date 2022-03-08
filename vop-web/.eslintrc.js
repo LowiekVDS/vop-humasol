@@ -24,6 +24,7 @@ module.exports = {
     "rules": {
         "react/react-in-jsx-scope": 0,
         "@typescript-eslint/no-var-requires": 0,
+        "no-constant-condition": 0,
         "formatjs/enforce-id": 2
     }
 }

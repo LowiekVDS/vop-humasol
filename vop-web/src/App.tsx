@@ -7,6 +7,7 @@ import PageNotFound from "./views/PageNotFound";
 import React from "react";
 import "./index.css";
 import Configure from "./views/Configure";
+import Monitor from "./views/Monitor";
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <HashRouter>
           <Routes>
             <Route path="/" element={<MainView />} />
-            {/* <Route path="/monitor" element={<Monitor/>} /> */}
+            <Route path="/monitor" element={<Monitor/>} />
             <Route path="/configure" element={<Configure/>} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>

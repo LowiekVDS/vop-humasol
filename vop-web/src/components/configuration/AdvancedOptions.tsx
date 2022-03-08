@@ -1,10 +1,7 @@
-import { MenuItem, Select, TextField } from "@mui/material";
+import { MenuItem, Select } from "@mui/material";
 import { useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import Button from "../Button";
-import NumberInput from "semantic-ui-react-numberinput";
-
-console.log(NumberInput);
 
 export interface AdvancedOptions {
   data?: AdvancedOptionsData;
@@ -46,6 +43,8 @@ export default function AdvancedOptions(props: AdvancedOptions) {
     if (props.data) {
       propData = props.data as any;
     }
+
+    console.log(propData);
 
     if (propData) {
       setData(propData as any);
