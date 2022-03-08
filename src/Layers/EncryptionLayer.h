@@ -10,6 +10,6 @@ class EncryptionLayer : public virtual Layer
 {
 
 public:
-    void up(uint8_t *payload) override;
-    void down(uint8_t *payload) override;
+    void up(uint8_t *payload, int8_t length) override;
+    void down(uint8_t *payload, int8_t length) override;
 };

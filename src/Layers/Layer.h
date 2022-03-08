@@ -7,12 +7,12 @@ protected:
     Layer *downLayer;
 
 public:
-    Layer() : upLayer(nullptr), downLayer(nullptr){};
+    Layer(Layer *downLayer) : upLayer(nullptr), downLayer(downLayer){};
     ~Layer() {}
 
 public:
-    virtual void up(uint8_t *payload) = 0;
-    virtual void down(uint8_t *payload) = 0;
+    virtual void up(uint8_t *payload, int8_t length) = 0;
+    virtual void down(uint8_t *payload, int8_t length) = 0;
 
     inline void setUpLayer(Layer *layer) { this->upLayer = layer; };
     inline void setDownLayer(Layer *layer) { this->downLayer = layer; };
