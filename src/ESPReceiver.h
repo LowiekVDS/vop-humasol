@@ -8,7 +8,7 @@
 #endif
 #include "Receiver.h"
 #include "./Entries/Entries.h"
-
+Receiver* receiver;
 void setup()
 {
   logInit();
@@ -23,14 +23,27 @@ void setup()
 //   receiver.AESenabled(false);
 // #endif
 
-  uint8_t* buffer = new uint8_t[6]{0x01, 0x01, 0x19, 0x03, 0x01, 0x00};
-  uint8_t bufferSize = 6;
+  // uint8_t* buffer = new uint8_t[6]{0x01, 0x01, 0x19, 0x03, 0x01, 0x00};
+  // uint8_t bufferSize = 6;
 
-  Receiver receiver(buffer, bufferSize, EncryptionType::ENC_NONE);
-  receiver.parse();
-  receiver.process();
+  receiver = new Receiver(EncryptionType::ENC_AES);
 }
 
 void loop()
 {
+
+  int packetSize = LoRa.parsePacket();
+  if (packetSize) {
+    // received a packet
+    Serial.print("Received packet '");
+    uint8_t* buffer = new uint8_t[packetSize];
+    // read packet
+    LoRa.readBytes(buffer, packetSize);
+    printArray(buffer, packetSize);
+
+    receiver->receive(buffer, packetSize);
+    receiver->parse();
+    receiver->process();
+  }
+  
 }

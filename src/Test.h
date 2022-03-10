@@ -15,6 +15,8 @@ int main() {
     // Sender
     Sender* sender = new Sender(EncryptionType::ENC_AES);
     sender->add(new PumpStateEntry(PUMP_OPEN));
+    sender->add(new PumpLevelEntry(25));
+    sender->add(new BatteryLevelEntry(75));
 
     buffer = sender->send(&bufferSize);
     delete sender;

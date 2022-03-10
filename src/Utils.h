@@ -42,6 +42,7 @@ inline int roundUp(int numToRound, int multiple)
 inline void printArray(void* array, int length){
     uint8_t* pointer = (uint8_t*) array;
     for (int i = 0; i < length; i++){
-        printf("0x%02x ", pointer[i]);
+        // printf("0x%02x ", pointer[i]);
+        Serial.printf("0x%02x ", pointer[i]);
     }
 } 
