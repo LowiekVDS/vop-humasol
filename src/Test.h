@@ -6,25 +6,16 @@
 #include "Receiver.h"
 #include <iostream>
 
+#include "./Layers/LayerStack.h"
+
 
 int main() {
-    uint8_t* buffer;
-    uint8_t bufferSize;
+    LayerStack* layerStack = new LayerStack();
     
-    std::cout << "=== Sender ===" << std::endl;
-    // Sender
-    Sender* sender = new Sender(EncryptionType::ENC_AES);
-    sender->add(new PumpStateEntry(PUMP_OPEN));
+    layerStack->addEntry(new BatteryLevelEntry(25));
+    layerStack->addEntry(new PumpStateEntry(25));
+    layerStack->flush();
 
-    buffer = sender->send(&bufferSize);
-    delete sender;
-
-    std::cout << "=== Receiver ===" << std::endl;
-    // Receiver
-    Receiver* receiver = new Receiver(buffer, bufferSize, EncryptionType::ENC_AES);
-    receiver->parse();
-    receiver->process();
-    delete receiver;
-
+    delete layerStack;
     return 0;
 }

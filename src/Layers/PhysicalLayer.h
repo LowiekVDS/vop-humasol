@@ -2,9 +2,11 @@
 
 #include "./Layer.h"
 #include "stdint.h"
+#if TARGET == ESP_32
 #include <LoRa.h>
+#endif
 
-class PhysicalLayer : public virtual Layer
+class PhysicalLayer : public Layer
 {
 
 private:
@@ -14,13 +16,15 @@ private:
     int dio0Pin;
 
 public:
-    PhysicalLayer(long frequency, int ssPin = 5, int resetPin = 14, int dio0Pin = 2) : Layer(nullptr), frequency(frequency), ssPin(ssPin), resetPin(resetPin), dio0Pin(dio0Pin)
+    PhysicalLayer(long frequency, int ssPin = 5, int resetPin = 14, int dio0Pin = 2) : Layer(), frequency(frequency), ssPin(ssPin), resetPin(resetPin), dio0Pin(dio0Pin)
     {
+        #if TARGET == ESP_32
         LoRa.setPins(this->ssPin, this->resetPin, this->dio0Pin);
 
         if (!LoRa.begin(frequency))
             throw "LoRa initialization failed";
+        #endif
     };
-    void up(uint8_t *payload, int8_t length) override;
-    void down(uint8_t *payload, int8_t length) override;
+    void up(uint8_t *payload, uint8_t length) override;
+    void down(uint8_t *payload, uint8_t length) override;
 };
