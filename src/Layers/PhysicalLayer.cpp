@@ -20,6 +20,17 @@ void PhysicalLayer::init(long frequency, int ssPin, int resetPin, int dio0Pin)
     LoRa.onReceive(PhysicalLayer::OnReceive);
 }
 
+void PhysicalLayer::OnReceive(int packetSize)
+{
+
+    uint8_t *buffer = new uint8_t[packetSize];
+    LoRa.readBytes(buffer, packetSize);
+
+    PhysicalLayer::GetInstance().up(buffer, packetSize);
+
+    delete buffer;
+}
+
 void PhysicalLayer::loadConfig(JsonObject jsonConfig)
 {
 
@@ -51,6 +62,17 @@ void PhysicalLayer::loadConfig(JsonObject jsonConfig)
     else
     {
         LoRa.disableCrc();
+    }
+    if (jsonConfig.containsKey("type"))
+    {
+        if (jsonConfig["type"] == "Receiver")
+        {
+            LoRa.receive();
+        }
+        else
+        {
+            LoRa.sleep();
+        }
     }
 }
 
