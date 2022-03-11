@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include "ArduinoJson.h"
 
 /**
  * @brief Abstract class to represent a network layer
@@ -31,6 +32,13 @@ public:
      * @param length  the length of said payload
      */
     virtual void down(uint8_t *payload, uint8_t length) = 0;
+
+    /**
+     * @brief Loads a config (if required)
+     *
+     * @param jsonConfig
+     */
+    inline void loadConfig(JsonObject jsonConfig){};
 
     /**
      * @brief Set the upLayer object (the layer above this one)

@@ -1,9 +1,10 @@
 #pragma once
-#include "Layer.h"
+#include "TerminalLayer.h"
 #include <vector>
 #include "Entries/TLVEntry.h"
+#include "ArduinoJson.h"
 
-class ApplicationLayer : public Layer
+class ApplicationLayer : public TopTerminalLayer
 {
 private:
     /**
@@ -18,9 +19,11 @@ private:
     static std::vector<TLVEntry *> extractEntries(uint8_t *payload, uint8_t length);
 
 public:
-    ApplicationLayer() : Layer(){};
+    ApplicationLayer() : TopTerminalLayer(){};
     void up(uint8_t *payload, uint8_t length) override;
     void down(uint8_t *payload, uint8_t length) override;
+
+    void loadConfig(JsonObject jsonConfig);
 
     /**
      * @brief Add an entry to the buffer, waiting to be sent
