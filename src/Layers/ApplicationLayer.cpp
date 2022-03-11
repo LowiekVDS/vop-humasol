@@ -4,7 +4,14 @@
 
 void ApplicationLayer::up(uint8_t *payload, uint8_t length)
 {
-    // Decode the payload into TLVEntry objects and feed to the callback (can be sequential as every TLVEntry is "atomic")
+    extractEntries(payload, length);
+
+    for (auto it = m_entries.begin(); it != m_entries.end();)
+    {
+        TLVEntry *entry = *it;
+        entry->process(); // This should be implemented in each Entry class and dispatch its changes to the appropriate handler
+        it = m_entries.erase(it);
+    }
 }
 
 void ApplicationLayer::down(uint8_t *payload, uint8_t length)
