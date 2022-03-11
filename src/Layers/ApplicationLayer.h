@@ -15,7 +15,7 @@ private:
      * @brief The current size of all entries combined
      */
     uint8_t m_bufferSize;
-    void extractEntries(uint8_t *payload, uint8_t length);
+    static std::vector<TLVEntry *> extractEntries(uint8_t *payload, uint8_t length);
 
 public:
     ApplicationLayer() : Layer(){};

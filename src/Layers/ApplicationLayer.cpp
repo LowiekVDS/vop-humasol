@@ -4,13 +4,13 @@
 
 void ApplicationLayer::up(uint8_t *payload, uint8_t length)
 {
-    extractEntries(payload, length);
+    std::vector<TLVEntry*> entries = extractEntries(payload, length);
 
-    for (auto it = m_entries.begin(); it != m_entries.end();)
+    for (auto it = entries.begin(); it != entries.end();)
     {
         TLVEntry *entry = *it;
         entry->process(); // This should be implemented in each Entry class and dispatch its changes to the appropriate handler
-        it = m_entries.erase(it);
+        it = entries.erase(it);
     }
 }
 
