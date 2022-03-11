@@ -38,7 +38,7 @@ public:
      *
      * @param jsonConfig
      */
-    inline void loadConfig(JsonObject jsonConfig){};
+    inline void loadConfig(JsonObject* jsonConfig){};
 
     /**
      * @brief Set the upLayer object (the layer above this one)
@@ -53,4 +53,8 @@ public:
      * @param layer
      */
     inline void setDownLayer(Layer *layer) { this->downLayer = layer; };
+
+    inline Layer *getDownLayer() { return this->downLayer; }
+
+    inline Layer *getUpLayer() { return this->upLayer; }
 };

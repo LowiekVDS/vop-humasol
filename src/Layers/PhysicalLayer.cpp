@@ -31,31 +31,31 @@ void PhysicalLayer::OnReceive(int packetSize)
     delete buffer;
 }
 
-void PhysicalLayer::loadConfig(JsonObject jsonConfig)
+void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
 {
 
     assert(this->frequency);
 
-    if (jsonConfig.containsKey("LoRaSpreadFactor"))
+    if (jsonConfig->containsKey("LoRaSpreadFactor"))
     {
-        LoRa.setSpreadingFactor(std::atoi(jsonConfig["LoRaSpreadFactor"]));
+        LoRa.setSpreadingFactor(std::atoi((*jsonConfig)["LoRaSpreadFactor"]));
     }
-    if (jsonConfig.containsKey("txPower"))
+    if (jsonConfig->containsKey("txPower"))
     {
-        LoRa.setTxPower(std::atoi(jsonConfig["txPower"]));
+        LoRa.setTxPower(std::atoi((*jsonConfig)["txPower"]));
     }
     {
-        LoRa.setSpreadingFactor(std::atoi(jsonConfig["LoRaSpreadFactor"]));
+        LoRa.setSpreadingFactor(std::atoi((*jsonConfig)["LoRaSpreadFactor"]));
     }
-    if (jsonConfig.containsKey("bandwidth"))
+    if (jsonConfig->containsKey("bandwidth"))
     {
-        LoRa.setSignalBandwidth(static_cast<int>(std::atof(jsonConfig["bandwidth"]) * 1000));
+        LoRa.setSignalBandwidth(static_cast<int>(std::atof((*jsonConfig)["bandwidth"]) * 1000));
     }
-    if (jsonConfig.containsKey("codingRate"))
+    if (jsonConfig->containsKey("codingRate"))
     {
-        LoRa.setCodingRate4(std::atoi(jsonConfig["codingRate"]));
+        LoRa.setCodingRate4(std::atoi((*jsonConfig)["codingRate"]));
     }
-    if (jsonConfig.containsKey("crc") && jsonConfig["crc"] == "true")
+    if (jsonConfig->containsKey("crc") && (*jsonConfig)["crc"] == "true")
     {
         LoRa.enableCrc();
     }
@@ -63,9 +63,9 @@ void PhysicalLayer::loadConfig(JsonObject jsonConfig)
     {
         LoRa.disableCrc();
     }
-    if (jsonConfig.containsKey("type"))
+    if (jsonConfig->containsKey("type"))
     {
-        if (jsonConfig["type"] == "Receiver")
+        if ((*jsonConfig)["type"] == "Receiver")
         {
             LoRa.receive();
         }

@@ -29,5 +29,5 @@ class LayerStack {
          */
         Layer* getTopLayer() {return this->m_topLayer;};
 
-        void loadConfig(JsonObject jsonConfig);
+        void loadConfig(JsonObject *jsonConfig);
 };
