@@ -2,9 +2,29 @@
 #include "PhysicalLayer.h"
 #include "Layer.h"
 #include "../Utils.h"
+#include <LoRa.h>
+#include <assert.h>
+
+void PhysicalLayer::init(long frequency, int ssPin, int resetPin, int dio0Pin)
+{
+    this->frequency = frequency;
+    this->ssPin = ssPin;
+    this->resetPin = resetPin;
+    this->dio0Pin = dio0Pin;
+
+    LoRa.setPins(this->ssPin, this->resetPin, this->dio0Pin);
+
+    if (!LoRa.begin(frequency))
+        throw "LoRa initialization failed";
+
+    LoRa.onReceive(PhysicalLayer::OnReceive);
+}
 
 void PhysicalLayer::loadConfig(JsonObject jsonConfig)
 {
+
+    assert(this->frequency);
+
     if (jsonConfig.containsKey("LoRaSpreadFactor"))
     {
         LoRa.setSpreadingFactor(std::atoi(jsonConfig["LoRaSpreadFactor"]));
@@ -36,11 +56,13 @@ void PhysicalLayer::loadConfig(JsonObject jsonConfig)
 
 void PhysicalLayer::up(uint8_t *payload, uint8_t length)
 {
+    assert(this->frequency);
     upLayer->up(payload, length);
 }
 
 void PhysicalLayer::down(uint8_t *payload, uint8_t length)
 {
+    assert(this->frequency);
 
     if (length > 255)
     {

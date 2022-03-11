@@ -9,7 +9,7 @@ void setup()
 {
 
   // Setup NetworkStack
-  networkStack.addLayer(new PhysicalLayer(433E6));
+  networkStack.addLayer(&PhysicalLayer::GetInstance());
   networkStack.addLayer(new TransportLayer());
   networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(&applicationLayer);
