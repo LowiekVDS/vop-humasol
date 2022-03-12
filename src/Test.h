@@ -11,7 +11,7 @@
 
 int main() {
     LayerStack* layerStack = new LayerStack();
-    
+
     layerStack->addEntry(new BatteryLevelEntry(25));
     layerStack->addEntry(new PumpStateEntry(25));
     layerStack->flush();
