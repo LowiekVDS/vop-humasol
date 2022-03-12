@@ -8,19 +8,7 @@
 
 void Receiver::decrypt()
 {
-    if (m_eType == EncryptionType::ENC_AES)
-    {
-        // TODO: ASSERT that payloadSize % 16 == 0;
-        AES aes(AESKeyLength::AES_128);
-
-        uint8_t key[16] = AES_KEY;
-        uint8_t init_vector[16] = AES_IV;
-
-        uint8_t *plain_text_buffer = aes.DecryptCBC(&m_buffer[0], m_bufferSize, &key[0], &init_vector[0]);
-
-        delete[] m_buffer;
-        m_buffer = plain_text_buffer;
-    }
+    
 }
 
 void Receiver::parse()

@@ -1,42 +1,75 @@
-#include "Constants.h"
+#include "Layers/Layers.h"
+#include "Layers/LayerStack.h"
+#include "Encryption/EncryptionType.h"
+#include "ESPAsyncWebServer.h"
+#include <DNSServer.h>
+#include "WiFi.h"
+#include "SPIFFS.h"
+#include "AsyncJson.h"
+#include "ArduinoJson.h"
+#include "WebServer/ConfigurationServer.h"
 
-#define SENDER 1
-#define RECEIVER 2
+#define DEBUG 1
 
-#define DEVICE RECEIVER 
+// Network stack
+LayerStack networkStack;
+ApplicationLayer applicationLayer;
+PhysicalLayer *physicalLayer = &PhysicalLayer::GetInstance();
 
-#if TARGET == ESP_32
-  #if DEVICE == SENDER
-    #include "./ESPSender.h"
-  #endif
+// WebServer
+ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
 
-  #if DEVICE == RECEIVER
-    #include "./ESPReceiver.h"
-  #endif
-#elif TARGET == WINDOWS
-  #include "./Test.h"
-#endif
+void setup()
+{
+  // Communication
+  if (DEBUG == 1)
+  {
+    Serial.begin(115200);
+  }
 
+  // Init the physicalLayer
+  physicalLayer->init(433E6);
 
+  // Setup NetworkStack
+  networkStack.addLayer(&PhysicalLayer::GetInstance());
+  networkStack.addLayer(new TransportLayer());
+  networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  networkStack.addLayer(&applicationLayer);
 
-// #include <stdint.h>
-// #include "Constants.h"
-// #include "./Encryption/AES.h"
-// #include "Utils.h"
+  // Load configuration
+  // networkStack.loadConfig();
 
-// int main(){
-//     uint8_t buffer[16] = {0x0,0x1,0x2,0x3,0x4,5,6,7,8,9,10,11,12,13,14,15};
-//     int buffer_size = 16;
+  // SPIFFS setup
+  if (!SPIFFS.begin())
+  {
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    throw "An Error has occurred while mounting SPIFFS";
+  }
 
-//     uint8_t key[16] = AES_KEY;
-//     uint8_t init_vector[16] = AES_IV;
+  // WiFi setup
+  // TODO replace with digitalRead or something similar
+  const bool enableWebserver = true;
+  if (enableWebserver)
+  {
+    configServer->init();
+    configServer->server.on(
+        "/api/config", HTTP_PATCH, [](AsyncWebServerRequest *request) {},
+        NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+        {
+      File configFile = SPIFFS.open("/config/config.json", "w");
+      configFile.write(data, len);
+      configFile.close();
+      
+      // TODO Reload LoRa config
+      
+      request->send(200, "application/json", "{}"); });
+  }
+}
 
-//     AES aes(AESKeyLength::AES_128);
-//     uint8_t* cypher_text = aes.EncryptCBC(&buffer[0], buffer_size, &key[0], &init_vector[0]);
-
-//     uint8_t key2[16] = AES_KEY;
-//     uint8_t init_vector2[16] = AES_IV;
-
-//     uint8_t* plain_text = aes.DecryptCBC(&cypher_text[0], buffer_size, &key2[0], &init_vector2[0]);
-//     printArray(plain_text, 16);
-// }
+void loop()
+{
+  if (configServer->isInitialized())
+  {
+    configServer->dnsServer.processNextRequest();
+  }
+}

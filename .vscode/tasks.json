@@ -10,6 +10,7 @@
 				"${workspaceFolder}/src/*.cpp",
 				"${workspaceFolder}/src/Entries/*.cpp",
 				"${workspaceFolder}/src/Encryption/*.cpp",
+				"${workspaceFolder}/src/Layers/*.cpp",
 				"-o",
 				"${workspaceFolder}/bin/test",
 				"-D",
