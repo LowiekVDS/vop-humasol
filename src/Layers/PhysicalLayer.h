@@ -45,6 +45,7 @@ public:
     static PhysicalLayer &GetInstance()
     {
         static PhysicalLayer *singleton = new PhysicalLayer();
+        singleton->name = "PHY";
         return *singleton;
     }
 
@@ -63,7 +64,7 @@ public:
      *
      * @param jsonConfig the configuration as json
      */
-    void loadConfig(JsonObject *jsonConfig);
+    void loadConfig(JsonObject *jsonConfig) override;
 
     void up(uint8_t *payload, uint8_t length) override;
     void down(uint8_t *payload, uint8_t length) override;
