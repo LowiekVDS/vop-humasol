@@ -19,6 +19,25 @@ PhysicalLayer *physicalLayer = &PhysicalLayer::GetInstance();
 // WebServer
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
 
+void loadConfig()
+{
+
+  Serial.println("Loading configuration...");
+
+  File configFile = SPIFFS.open("/config/config.json", "r");
+  String config = configFile.readString();
+  configFile.close();
+
+  // Temporary
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject((const char *)config.c_str());
+
+  Serial.print("Config: ");
+  Serial.println(config.c_str());
+
+  networkStack.loadConfig(&root);
+}
+
 void setup()
 {
   // Communication
@@ -32,12 +51,9 @@ void setup()
 
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
+  //networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(new TransportLayer());
-  networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(&applicationLayer);
-
-  // Load configuration
-  // networkStack.loadConfig();
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -45,6 +61,9 @@ void setup()
     Serial.println("An Error has occurred while mounting SPIFFS");
     throw "An Error has occurred while mounting SPIFFS";
   }
+
+  // Load configuration
+  loadConfig();
 
   // WiFi setup
   // TODO replace with digitalRead or something similar
@@ -60,7 +79,7 @@ void setup()
       configFile.write(data, len);
       configFile.close();
       
-      // TODO Reload LoRa config
+      loadConfig();
       
       request->send(200, "application/json", "{}"); });
   }

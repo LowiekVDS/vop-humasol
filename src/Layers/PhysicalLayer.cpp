@@ -23,6 +23,9 @@ void PhysicalLayer::init(long frequency, int ssPin, int resetPin, int dio0Pin)
 void PhysicalLayer::OnReceive(int packetSize)
 {
 
+    Serial.print("[PHY]> Received something! Packetsize ");
+    Serial.println(packetSize);
+
     uint8_t *buffer = new uint8_t[packetSize];
     LoRa.readBytes(buffer, packetSize);
 
@@ -33,6 +36,8 @@ void PhysicalLayer::OnReceive(int packetSize)
 
 void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
 {
+
+    Serial.println("loading configuration...");
 
     assert(this->frequency);
 
@@ -74,6 +79,8 @@ void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
             LoRa.sleep();
         }
     }
+
+    Serial.println("done");
 }
 
 void PhysicalLayer::up(uint8_t *payload, uint8_t length)

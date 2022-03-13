@@ -1,6 +1,14 @@
 #pragma once
 #include <stdint.h>
 #include "ArduinoJson.h"
+#include "Arduino.h"
+
+enum LoggingSeverity
+{
+    INFO,
+    WARNING,
+    ERROR
+};
 
 /**
  * @brief Abstract class to represent a network layer
@@ -13,7 +21,8 @@ protected:
     Layer *downLayer;
 
 public:
-    Layer() : upLayer(nullptr), downLayer(nullptr){};
+    String name;
+    Layer() : upLayer(nullptr), downLayer(nullptr), name("Layer"){};
     ~Layer() {}
 
 public:
@@ -38,7 +47,7 @@ public:
      *
      * @param jsonConfig
      */
-    inline void loadConfig(JsonObject* jsonConfig){};
+    inline virtual void loadConfig(JsonObject *jsonConfig) { Serial.println("[LAYER] (WARNING)> loadConfig is not implemented"); };
 
     /**
      * @brief Set the upLayer object (the layer above this one)
@@ -46,6 +55,33 @@ public:
      * @param layer
      */
     inline void setUpLayer(Layer *layer) { this->upLayer = layer; };
+
+    inline void log(uint8_t message, LoggingSeverity severity = INFO)
+    {
+        Serial.println("LOGGER");
+        String severityString;
+
+        if (severity == INFO)
+        {
+            severityString = "INFO";
+        }
+        else if (severity == WARNING)
+        {
+            severityString = "WARNING";
+        }
+        else if (severity == ERROR)
+        {
+            severityString = "ERROR";
+        }
+
+        Serial.printf("[%s] (%s)> ", this->name.c_str(), severityString.c_str());
+
+        Serial.println(message);
+    };
+
+    inline void log (String message, LoggingSeverity severity = INFO) {
+        this->log(message.c_str(), severity);
+    };
 
     /**
      * @brief Set the downLayer object (the layer below this one)
