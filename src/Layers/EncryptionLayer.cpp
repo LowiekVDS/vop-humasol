@@ -23,7 +23,8 @@ uint8_t* EncryptionLayer::encrypt(uint8_t* payload, uint8_t& length) {
     if (m_eType == EncryptionType::ENC_AES){
         length = roundUp(length, 16); // Round to the next multiple of 16.
 
-        uint8_t* extended_payload = new uint8_t[length];
+        uint8_t* extended_payload = new uint8_t[length]{0};
+        memcpy(&extended_payload[0], &payload[0], length);
         delete[] payload;
         payload = extended_payload;
 
