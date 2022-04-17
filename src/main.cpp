@@ -11,10 +11,17 @@
 
 #define DEBUG 1
 
+
+
 // Network stack
 LayerStack networkStack;
 ApplicationLayer applicationLayer;
 PhysicalLayer *physicalLayer = &PhysicalLayer::GetInstance();
+
+DummyPhysicalLayer *dummyPHY = new DummyPhysicalLayer();
+
+const uint8_t nrOfBufferLayers = 3;
+BufferLayer *bufferLayers[nrOfBufferLayers]; 
 
 // WebServer
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
@@ -49,10 +56,20 @@ void setup()
   // Init the physicalLayer
   physicalLayer->init(433E6);
 
+  // Init the buffer layers
+  for (uint8_t i = 0; i < nrOfBufferLayers; i++) {
+    bufferLayers[i] = new BufferLayer();
+  }
+
   // Setup NetworkStack
-  networkStack.addLayer(&PhysicalLayer::GetInstance());
-  //networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  // networkStack.addLayer(&PhysicalLayer::GetInstance());
+
+  networkStack.addLayer(dummyPHY);
+  networkStack.addLayer(bufferLayers[0]);
+  networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  networkStack.addLayer(bufferLayers[1]);
   networkStack.addLayer(new TransportLayer());
+  networkStack.addLayer(bufferLayers[2]);
   networkStack.addLayer(&applicationLayer);
 
   // SPIFFS setup
@@ -90,5 +107,20 @@ void loop()
   if (configServer->isInitialized())
   {
     configServer->dnsServer.processNextRequest();
+  }
+
+  // Sync buffer layers
+
+  boolean activity = false;
+  for (int8_t i = 0; i < nrOfBufferLayers; i++) {
+    activity = bufferLayers[i]->step();
+  }
+
+  if (!activity) {
+    // Go to sleep
+    Serial.println("No activity anymore. Going to sleep");
+    delay(1000);
+    Serial.println("Receiving new data...");
+    dummyPHY->OnReceive(10);
   }
 }

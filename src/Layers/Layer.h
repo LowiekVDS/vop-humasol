@@ -3,6 +3,8 @@
 #include "ArduinoJson.h"
 #include "Arduino.h"
 
+#define BUFFER_SIZE 16
+
 enum LoggingSeverity
 {
     INFO,
