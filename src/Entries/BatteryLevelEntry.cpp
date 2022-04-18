@@ -1,4 +1,5 @@
 #include "BatteryLevelEntry.h"
+#include "ArduinoJson.h"
 
 void BatteryLevelEntry::encode(uint8_t *&pointer) 
 {
@@ -16,6 +17,7 @@ void BatteryLevelEntry::decode(uint8_t *&pointer)
     pointer++;
 }
 
-void BatteryLevelEntry::process()
+TLVEntry* BatteryLevelEntry::process(JsonObject* configuration)
 {
+    return nullptr;
 }

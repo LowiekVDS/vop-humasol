@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "TLVEntry.h"
 #include "./Type.h"
+#include "ArduinoJson.h"
 
 struct BatteryLevelEntry : public TLVEntry{
     public:
@@ -16,7 +17,7 @@ struct BatteryLevelEntry : public TLVEntry{
         void encode(uint8_t*& pointer) override;
         void decode(uint8_t*& pointer) override;
 
-        void process() override;
+        TLVEntry* process(JsonObject* configuration) override;
 
     public:
         int size() override { return sizeof(type) + sizeof(length) + length;};

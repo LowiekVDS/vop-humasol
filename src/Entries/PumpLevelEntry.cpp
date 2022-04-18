@@ -1,4 +1,6 @@
 #include "PumpLevelEntry.h"
+#include "ArduinoJson.h"
+
 void PumpLevelEntry::encode(uint8_t *&pointer)
 {
     TLVEntry::encode(pointer);
@@ -15,9 +17,11 @@ void PumpLevelEntry::decode(uint8_t *&pointer)
     pointer++;
 }
 
-void PumpLevelEntry::process()
+TLVEntry* PumpLevelEntry::process(JsonObject* configuration)
 {
     if (this->level>85){
         log("Pumping halted.\n");
     }
+
+    return nullptr;
 }

@@ -36,7 +36,7 @@ void Receiver::process()
     for (auto it = m_entries.begin(); it != m_entries.end();)
     {
         TLVEntry *entry = *it;
-        entry->process();
+        entry->process(nullptr);
         it = m_entries.erase(it);
     }
 }

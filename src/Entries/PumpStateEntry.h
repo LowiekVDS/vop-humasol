@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "TLVEntry.h"
+#include "ArduinoJson.h"
 
 #define PUMP_OPEN 0x00
 #define PUMP_CLOSE 0xff
@@ -19,7 +20,7 @@ struct PumpStateEntry : public TLVEntry{
         void decode(uint8_t*& pointer) override;
 
     public:
-        void process() override;
+        TLVEntry* process(JsonObject* configuration) override;
 
 
     int size() override { return sizeof(type) + sizeof(length) + sizeof(state);};

@@ -10,13 +10,20 @@ void ApplicationLayer::up(uint8_t *payload, uint8_t length)
     for (auto it = entries.begin(); it != entries.end();)
     {
         TLVEntry *entry = *it;
-        entry->process(); // This should be implemented in each Entry class and dispatch its changes to the appropriate handler
+        TLVEntry* response = entry->process(this->configuration);
+
+        if (response) {
+            this->addEntry(response);
+        }
+
         it = entries.erase(it);
     }
+
+    this->flush();
 }
 
-void ApplicationLayer::loadConfig(JsonObject jsonConfig) {
-    // TODO set something up with handlers? Idk
+void ApplicationLayer::loadConfig(JsonObject* jsonConfig) {
+    this->configuration = jsonConfig;
 }
 
 void ApplicationLayer::down(uint8_t *payload, uint8_t length)
@@ -31,8 +38,22 @@ void ApplicationLayer::addEntry(TLVEntry *entry)
 }
 
 bool ApplicationLayer::step() {
-    // Check all messages
     
+    if (!this->configuration) return false;
+
+    if (!this->configuration->containsKey("type")) return false;
+
+    if ((*this->configuration)["type"] == "waterstorage") {
+        
+        // TODO do a measurement of the storage and send it (if necessary)
+
+    } else if ((*this->configuration)["type"] == "pump") {
+        return false;
+    } else {
+        return false;    
+    }
+
+    this->flush();
 }
 
 void ApplicationLayer::flush()
