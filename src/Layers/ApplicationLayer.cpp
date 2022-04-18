@@ -30,6 +30,11 @@ void ApplicationLayer::addEntry(TLVEntry *entry)
     m_bufferSize += entry->size();
 }
 
+bool ApplicationLayer::step() {
+    // Check all messages
+    
+}
+
 void ApplicationLayer::flush()
 {
     uint8_t *payload = new uint8_t[m_bufferSize]{0}; // Sets buffer to 0;

@@ -62,9 +62,9 @@ void setup()
   }
 
   // Setup NetworkStack
-  // networkStack.addLayer(&PhysicalLayer::GetInstance());
+  networkStack.addLayer(&PhysicalLayer::GetInstance());
+  // networkStack.addLayer(dummyPHY);
 
-  networkStack.addLayer(dummyPHY);
   networkStack.addLayer(bufferLayers[0]);
   networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[1]);
@@ -100,6 +100,10 @@ void setup()
       
       request->send(200, "application/json", "{}"); });
   }
+
+
+
+  pinMode(2, OUTPUT);
 }
 
 void loop()
@@ -109,18 +113,9 @@ void loop()
     configServer->dnsServer.processNextRequest();
   }
 
-  // Sync buffer layers
-
-  boolean activity = false;
-  for (int8_t i = 0; i < nrOfBufferLayers; i++) {
-    activity = bufferLayers[i]->step();
-  }
-
-  if (!activity) {
-    // Go to sleep
-    Serial.println("No activity anymore. Going to sleep");
-    delay(1000);
-    Serial.println("Receiving new data...");
-    dummyPHY->OnReceive(10);
+  if (!networkStack.step()) {
+    digitalWrite(2, HIGH);
+  } else {
+    digitalWrite(2, LOW);
   }
 }
