@@ -3,6 +3,8 @@
 #include "ArduinoJson.h"
 #include "Arduino.h"
 
+#define BUFFER_SIZE 16
+
 enum LoggingSeverity
 {
     INFO,
@@ -42,6 +44,8 @@ public:
      */
     virtual void down(uint8_t *payload, uint8_t length) = 0;
 
+    inline virtual bool step() { return false; };
+
     /**
      * @brief Loads a config (if required)
      *
@@ -79,7 +83,8 @@ public:
         Serial.println(message);
     };
 
-    inline void log (String message, LoggingSeverity severity = INFO) {
+    inline void log(String message, LoggingSeverity severity = INFO)
+    {
         this->log(message.c_str(), severity);
     };
 

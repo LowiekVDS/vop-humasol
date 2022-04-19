@@ -8,16 +8,27 @@
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
 #include "WebServer/ConfigurationServer.h"
+#include "Applications/Applications.h"
 
 #define DEBUG 1
 
-// Network stack
+// ----- Network stack & layers -----
 LayerStack networkStack;
-ApplicationLayer applicationLayer;
 PhysicalLayer *physicalLayer = &PhysicalLayer::GetInstance();
 
-// WebServer
+const uint8_t nrOfBufferLayers = 3;
+BufferLayer *bufferLayers[nrOfBufferLayers]; 
+
+// ----- Applications -----
+PingPongApp *pingPongApp = new PingPongApp();
+
+Application* currentApplication = nullptr;
+
+// ----- WebServer -----
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
+
+// ----- Global State -----
+JsonObject *configuration;
 
 void loadConfig()
 {
@@ -31,6 +42,8 @@ void loadConfig()
   // Temporary
   DynamicJsonBuffer jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject((const char *)config.c_str());
+
+  configuration = &root;
 
   Serial.print("Config: ");
   Serial.println(config.c_str());
@@ -49,11 +62,19 @@ void setup()
   // Init the physicalLayer
   physicalLayer->init(433E6);
 
+  // Init the buffer layers
+  for (uint8_t i = 0; i < nrOfBufferLayers; i++) {
+    bufferLayers[i] = new BufferLayer();
+  }
+
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
-  //networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  networkStack.addLayer(bufferLayers[0]);
+  networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  networkStack.addLayer(bufferLayers[1]);
   networkStack.addLayer(new TransportLayer());
-  networkStack.addLayer(&applicationLayer);
+  networkStack.addLayer(bufferLayers[2]);
+  networkStack.addLayer(pingPongApp);
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -83,6 +104,13 @@ void setup()
       
       request->send(200, "application/json", "{}"); });
   }
+
+
+  // Set current application
+  currentApplication = pingPongApp;
+
+
+  pinMode(2, OUTPUT);
 }
 
 void loop()
@@ -90,5 +118,14 @@ void loop()
   if (configServer->isInitialized())
   {
     configServer->dnsServer.processNextRequest();
+  }
+
+  if (!networkStack.step() && !( currentApplication && !currentApplication->run())) {
+    // Keep running
+    digitalWrite(2, HIGH);
+  } else {
+
+    // Sleep
+    digitalWrite(2, LOW);
   }
 }

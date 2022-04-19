@@ -1,12 +1,12 @@
 #pragma once
 #include "TerminalLayer.h"
 #include <vector>
-#include "Entries/TLVEntry.h"
+#include "./../Entries/TLVEntry.h"
 #include "ArduinoJson.h"
 
 class ApplicationLayer : public TopTerminalLayer
 {
-private:
+protected:
     /**
      * @brief TLVEntry entries. The buffer of entries to send (in a single packet)
      */
@@ -18,12 +18,14 @@ private:
     uint8_t m_bufferSize;
     static std::vector<TLVEntry *> extractEntries(uint8_t *payload, uint8_t length);
 
+    JsonObject *configuration;
+
 public:
     ApplicationLayer() : TopTerminalLayer(){};
-    void up(uint8_t *payload, uint8_t length) override;
+
     void down(uint8_t *payload, uint8_t length) override;
 
-    void loadConfig(JsonObject jsonConfig);
+    void loadConfig(JsonObject* jsonConfig) override;
 
     /**
      * @brief Add an entry to the buffer, waiting to be sent

@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "TLVEntry.h"
+#include "ArduinoJson.h"
+
 struct PumpLevelEntry : public TLVEntry{
     public:
         uint8_t level;
@@ -15,7 +17,7 @@ struct PumpLevelEntry : public TLVEntry{
         void decode(uint8_t*& pointer) override;
 
     public:
-        void process() override;
+        TLVEntry* process(JsonObject* configuration) override;
 
 
     int size() override { return sizeof(type) + sizeof(length) + sizeof(level);};

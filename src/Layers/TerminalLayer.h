@@ -10,7 +10,9 @@ enum TerminalLayerType
 };
 
 /**
- * @brief Abstract class to represent a network layer
+ * @brief Abstract class to represent a terminal network layer
+ * 
+ * A terminal layer is a layer that only has one neighbouring layer (top or bottom)
  */
 class TerminalLayer : public Layer
 {

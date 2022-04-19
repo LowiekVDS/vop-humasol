@@ -3,20 +3,8 @@
 #include "ArduinoJson.h"
 #include <vector>
 
-void ApplicationLayer::up(uint8_t *payload, uint8_t length)
-{
-    std::vector<TLVEntry *> entries = ApplicationLayer::extractEntries(payload, length);
-
-    for (auto it = entries.begin(); it != entries.end();)
-    {
-        TLVEntry *entry = *it;
-        entry->process(); // This should be implemented in each Entry class and dispatch its changes to the appropriate handler
-        it = entries.erase(it);
-    }
-}
-
-void ApplicationLayer::loadConfig(JsonObject jsonConfig) {
-    // TODO set something up with handlers? Idk
+void ApplicationLayer::loadConfig(JsonObject* jsonConfig) {
+    this->configuration = jsonConfig;
 }
 
 void ApplicationLayer::down(uint8_t *payload, uint8_t length)
