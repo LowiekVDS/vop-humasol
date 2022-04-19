@@ -15,6 +15,20 @@ void LayerStack::addLayer(Layer *layer)
     this->m_stackSize++;
 }
 
+bool LayerStack::removeLayer() {
+    if (this->m_stackSize == 0) return false;
+
+    if (this->m_stackSize == 1) {
+        this->m_stackSize--;
+        this->m_topLayer = nullptr;
+        return true;
+    }
+
+    this->m_topLayer = this->m_topLayer->getDownLayer();
+    this->m_stackSize--;
+    return true;
+}
+
 void LayerStack::loadConfig(JsonObject *json)
 {
 

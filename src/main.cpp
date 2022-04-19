@@ -8,23 +8,27 @@
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
 #include "WebServer/ConfigurationServer.h"
+#include "Applications/Applications.h"
 
 #define DEBUG 1
 
-
-
-// Network stack
+// ----- Network stack & layers -----
 LayerStack networkStack;
-ApplicationLayer applicationLayer;
 PhysicalLayer *physicalLayer = &PhysicalLayer::GetInstance();
-
-DummyPhysicalLayer *dummyPHY = new DummyPhysicalLayer();
 
 const uint8_t nrOfBufferLayers = 3;
 BufferLayer *bufferLayers[nrOfBufferLayers]; 
 
-// WebServer
+// ----- Applications -----
+PingPongApp *pingPongApp = new PingPongApp();
+
+Application* currentApplication = nullptr;
+
+// ----- WebServer -----
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
+
+// ----- Global State -----
+JsonObject *configuration;
 
 void loadConfig()
 {
@@ -38,6 +42,8 @@ void loadConfig()
   // Temporary
   DynamicJsonBuffer jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject((const char *)config.c_str());
+
+  configuration = &root;
 
   Serial.print("Config: ");
   Serial.println(config.c_str());
@@ -63,14 +69,12 @@ void setup()
 
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
-  // networkStack.addLayer(dummyPHY);
-
   networkStack.addLayer(bufferLayers[0]);
   networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[1]);
   networkStack.addLayer(new TransportLayer());
   networkStack.addLayer(bufferLayers[2]);
-  networkStack.addLayer(&applicationLayer);
+  networkStack.addLayer(pingPongApp);
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -102,6 +106,9 @@ void setup()
   }
 
 
+  // Set current application
+  currentApplication = pingPongApp;
+
 
   pinMode(2, OUTPUT);
 }
@@ -113,9 +120,12 @@ void loop()
     configServer->dnsServer.processNextRequest();
   }
 
-  if (!networkStack.step()) {
+  if (!networkStack.step() && !( currentApplication && !currentApplication->run())) {
+    // Keep running
     digitalWrite(2, HIGH);
   } else {
+
+    // Sleep
     digitalWrite(2, LOW);
   }
 }

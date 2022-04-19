@@ -3,25 +3,6 @@
 #include "ArduinoJson.h"
 #include <vector>
 
-void ApplicationLayer::up(uint8_t *payload, uint8_t length)
-{
-    std::vector<TLVEntry *> entries = ApplicationLayer::extractEntries(payload, length);
-
-    for (auto it = entries.begin(); it != entries.end();)
-    {
-        TLVEntry *entry = *it;
-        TLVEntry* response = entry->process(this->configuration);
-
-        if (response) {
-            this->addEntry(response);
-        }
-
-        it = entries.erase(it);
-    }
-
-    this->flush();
-}
-
 void ApplicationLayer::loadConfig(JsonObject* jsonConfig) {
     this->configuration = jsonConfig;
 }
@@ -35,25 +16,6 @@ void ApplicationLayer::addEntry(TLVEntry *entry)
 {
     m_entries.push_back(entry);
     m_bufferSize += entry->size();
-}
-
-bool ApplicationLayer::step() {
-    
-    if (!this->configuration) return false;
-
-    if (!this->configuration->containsKey("type")) return false;
-
-    if ((*this->configuration)["type"] == "waterstorage") {
-        
-        // TODO do a measurement of the storage and send it (if necessary)
-
-    } else if ((*this->configuration)["type"] == "pump") {
-        return false;
-    } else {
-        return false;    
-    }
-
-    this->flush();
 }
 
 void ApplicationLayer::flush()

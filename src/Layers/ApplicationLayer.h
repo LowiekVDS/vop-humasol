@@ -6,7 +6,7 @@
 
 class ApplicationLayer : public TopTerminalLayer
 {
-private:
+protected:
     /**
      * @brief TLVEntry entries. The buffer of entries to send (in a single packet)
      */
@@ -22,15 +22,8 @@ private:
 
 public:
     ApplicationLayer() : TopTerminalLayer(){};
-    void up(uint8_t *payload, uint8_t length) override;
-    void down(uint8_t *payload, uint8_t length) override;
 
-    /**
-     * Processes the application layer
-     * 
-     * @returns wether or not the application has to do something in the next step or not
-     */ 
-    bool step() override;
+    void down(uint8_t *payload, uint8_t length) override;
 
     void loadConfig(JsonObject* jsonConfig) override;
 

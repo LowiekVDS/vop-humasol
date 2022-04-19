@@ -24,6 +24,8 @@ class LayerStack {
          */
         void addLayer(Layer* layer);
 
+        bool removeLayer();
+
         /**
          * @brief Get the Top Layer object
          * 
