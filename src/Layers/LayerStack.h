@@ -14,8 +14,9 @@ class LayerStack {
         uint8_t m_stackSize;
         const uint8_t no_activity_limit;
         uint8_t activity_counter;
+        Layer* steppingPointer;
     public:
-        LayerStack(): m_stackSize(0), no_activity_limit(3) {};
+        LayerStack(): m_stackSize(0), no_activity_limit(3), steppingPointer(nullptr) {};
 
         /**
          * @brief Adds a new layer on top of the stack and connects it correctly to the existing stack

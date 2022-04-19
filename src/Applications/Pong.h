@@ -10,4 +10,5 @@ public:
     ~PongApp(){};
 
     void up(uint8_t *payload, uint8_t length) override;
+    bool step() override;
 };

@@ -24,12 +24,6 @@ void PhysicalLayer::init(long frequency, int ssPin, int resetPin, int dio0Pin)
 void PhysicalLayer::OnReceive(int packetSize)
 {
 
-    if (DEBUG)
-    {
-        Serial.print("[PHY]> Received something! Packetsize ");
-        Serial.println(packetSize);
-    }
-
     uint8_t *buffer = new uint8_t[packetSize];
     LoRa.readBytes(buffer, packetSize);
 

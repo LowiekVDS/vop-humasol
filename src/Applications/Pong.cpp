@@ -2,6 +2,8 @@
 #include "../Layers/ApplicationLayer.h"
 #include "../Entries/Type.h"
 #include "../Entries/TLVEntry.h"
+#include "../Layers/PhysicalLayer.h"
+#include "LoRa.h"
 
 void PongApp::up(uint8_t *payload, uint8_t length)
 {
@@ -21,4 +23,9 @@ void PongApp::up(uint8_t *payload, uint8_t length)
     }
 
     this->flush();
+}
+
+bool PongApp::step() {
+    LoRa.receive();
+    return false; 
 }

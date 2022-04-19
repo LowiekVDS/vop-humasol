@@ -78,13 +78,13 @@ void setup()
   networkStack.addLayer(bufferLayers[0]);
   // networkStack.addLayer(new EncryptionLayer(ENC_AES));
   // networkStack.addLayer(bufferLayers[1]);
-  // networkStack.addLayer(new TransportLayer());
-  // networkStack.addLayer(bufferLayers[2]);
+  networkStack.addLayer(new TransportLayer());
+  networkStack.addLayer(bufferLayers[2]);
 
-  networkStack.addLayer(pingPongApp);
+   networkStack.addLayer(pingPongApp);
   // currentApplication = pingPongApp;
 
-  // networkStack.addLayer(pongApp);
+  //networkStack.addLayer(pongApp);
   // currentApplication = pongApp;
 
   // SPIFFS setup
@@ -102,7 +102,7 @@ void setup()
 
   // WiFi setup
   // TODO replace with digitalRead or something similar
-  const bool enableWebserver = false;
+  const bool enableWebserver = true;
   if (enableWebserver)
   {
     configServer->init();
@@ -128,16 +128,23 @@ void loop()
   {
     configServer->dnsServer.processNextRequest();
   }
+  networkStack.step();
 
-  if (!networkStack.step())
-  {
-    // Keep running
-    digitalWrite(15, HIGH);
-  }
-  else
-  {
+  delay(1);
 
-    // Sleep
-    digitalWrite(15, LOW);
-  }
+// Serial.println("TEST");
+  // delay(100);
+
+  // if (!networkStack.step())
+  // {
+  //   Serial.println("TEST");
+  //   // Keep running
+  //   digitalWrite(15, HIGH);
+  // }
+  // else
+  // {
+
+  //   // Sleep
+  //   digitalWrite(15, LOW);
+  // }
 }

@@ -6,6 +6,7 @@ enum PingPongAppStates {
     IDLE,
     SENT_PING,
     RECEIVED_PONG,
+    WAITING,
     TIMEOUT
 };
 

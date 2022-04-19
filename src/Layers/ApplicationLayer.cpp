@@ -3,7 +3,8 @@
 #include "ArduinoJson.h"
 #include <vector>
 
-void ApplicationLayer::loadConfig(JsonObject* jsonConfig) {
+void ApplicationLayer::loadConfig(JsonObject *jsonConfig)
+{
     this->configuration = jsonConfig;
 }
 
@@ -16,15 +17,13 @@ void ApplicationLayer::addEntry(TLVEntry *entry)
 {
     m_entries.push_back(entry);
     m_bufferSize += entry->size();
-    Serial.println(m_bufferSize);
-    Serial.println(entry->size());
 }
 
 void ApplicationLayer::flush()
 {
-      Serial.println(m_bufferSize);
-    
-    if (m_bufferSize == 0) return;
+
+    if (m_bufferSize == 0)
+        return;
 
     uint8_t *payload = new uint8_t[m_bufferSize]{0}; // Sets buffer to 0;
     uint8_t *pointer = &payload[0];
@@ -38,9 +37,6 @@ void ApplicationLayer::flush()
         delete entry;
         it = m_entries.erase(it);
     }
-
-    Serial.println("Flush");
-    Serial.println(m_bufferSize);
 
     this->down(payload, m_bufferSize);
 
