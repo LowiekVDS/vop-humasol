@@ -1,9 +1,10 @@
 #include <vector>
 #include "PhysicalLayer.h"
 #include "Layer.h"
-#include "../Utils.h"
 #include <LoRa.h>
 #include <assert.h>
+
+#include "Env.h"
 
 void PhysicalLayer::init(long frequency, int ssPin, int resetPin, int dio0Pin)
 {
@@ -23,8 +24,11 @@ void PhysicalLayer::init(long frequency, int ssPin, int resetPin, int dio0Pin)
 void PhysicalLayer::OnReceive(int packetSize)
 {
 
-    Serial.print("[PHY]> Received something! Packetsize ");
-    Serial.println(packetSize);
+    if (DEBUG)
+    {
+        Serial.print("[PHY]> Received something! Packetsize ");
+        Serial.println(packetSize);
+    }
 
     uint8_t *buffer = new uint8_t[packetSize];
     LoRa.readBytes(buffer, packetSize);
@@ -36,8 +40,6 @@ void PhysicalLayer::OnReceive(int packetSize)
 
 void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
 {
-
-    Serial.println("loading configuration...");
 
     assert(this->frequency);
 
@@ -72,17 +74,13 @@ void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
     {
         if ((*jsonConfig)["type"] == "Receiver")
         {
-            Serial.println("OK");
             LoRa.receive();
-            this->state = 1;
         }
         else
         {
             LoRa.sleep();
         }
     }
-
-    Serial.println("done");
 }
 
 void PhysicalLayer::up(uint8_t *payload, uint8_t length)
@@ -94,10 +92,11 @@ void PhysicalLayer::up(uint8_t *payload, uint8_t length)
 void PhysicalLayer::down(uint8_t *payload, uint8_t length)
 {
 
-    Serial.println("GOT SOMETHN");
-    Serial.println(length);
-    Serial.write(payload, length);
-
+    if (DEBUG)
+    {
+        Serial.print("[PHY]> Sending something! Packetsize ");
+        Serial.println(length);
+    }
     assert(this->frequency);
 
     if (length > 255)
@@ -108,11 +107,5 @@ void PhysicalLayer::down(uint8_t *payload, uint8_t length)
     // Actually send the thing to LoRa
     LoRa.beginPacket();
     LoRa.write(payload, length);
-    //LoRa.write((uint8_t*) "Hello world!", 12);
     LoRa.endPacket();
-
-    if (this->state == 1) {
-        LoRa.receive();
-    }
-    
 }

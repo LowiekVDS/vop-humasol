@@ -2,6 +2,7 @@
 #include "../Layers/ApplicationLayer.h"
 #include "../Entries/Type.h"
 #include "../Entries/TLVEntry.h"
+#include "Env.h"
 
 void PingPongApp::up(uint8_t *payload, uint8_t length)
 {
@@ -34,6 +35,9 @@ bool PingPongApp::step()
     case IDLE:
     case TIMEOUT:
     {
+
+        if (DEBUG) Serial.println("[PingPong]> Sending PING");
+
         this->addEntry(TLVEntry::CreateFromType(PING));
         this->state = SENT_PING;
         this->timeSent = millis();
@@ -45,7 +49,7 @@ bool PingPongApp::step()
 
     case RECEIVED_PONG:
     {
-        Serial.println("PONG received! Pingpong is finishing...");
+        if (DEBUG) Serial.println("[PingPong]> PONG received! Pingpong is finishing...");
         this->state = IDLE;
 
         return false;

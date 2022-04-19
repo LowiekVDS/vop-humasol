@@ -12,7 +12,7 @@
 #include "map"
 #include "string"
 
-#define DEBUG 1
+#include "Env.h"
 
 // ----- Network stack & layers -----
 LayerStack networkStack;
@@ -24,10 +24,6 @@ BufferLayer *bufferLayers[nrOfBufferLayers];
 // ----- Applications -----
 PingPongApp *pingPongApp = new PingPongApp();
 PongApp *pongApp = new PongApp();
-
-// std::map<std::string, Application *> applications;
-
-Application *currentApplication = nullptr;
 
 // ----- WebServer -----
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
@@ -50,17 +46,12 @@ void loadConfig()
 
   configuration = &root;
 
-  Serial.print("Config: ");
-  Serial.println(config.c_str());
+  if (DEBUG)
+  {
 
-  // if (root.containsKey("application"))
-  // {
-
-  //   if (applications.find(root["application"]) != applications.end())
-  //   {
-  //     currentApplication = applications[root["application"]];
-  //   }
-  // }
+    Serial.print("Config: ");
+    Serial.println(config.c_str());
+  }
 
   networkStack.loadConfig(&root);
 }
@@ -85,21 +76,16 @@ void setup()
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
   networkStack.addLayer(bufferLayers[0]);
- // networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  // networkStack.addLayer(new EncryptionLayer(ENC_AES));
   // networkStack.addLayer(bufferLayers[1]);
   // networkStack.addLayer(new TransportLayer());
   // networkStack.addLayer(bufferLayers[2]);
 
+  networkStack.addLayer(pingPongApp);
+  // currentApplication = pingPongApp;
 
-
-  //networkStack.addLayer(pingPongApp);
-  //currentApplication = pingPongApp;
-
-  networkStack.addLayer(pongApp);
-    currentApplication = pongApp;
-
-
-
+  // networkStack.addLayer(pongApp);
+  // currentApplication = pongApp;
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -143,7 +129,7 @@ void loop()
     configServer->dnsServer.processNextRequest();
   }
 
-  if (!networkStack.step() && !(currentApplication && !currentApplication->run()))
+  if (!networkStack.step())
   {
     // Keep running
     digitalWrite(15, HIGH);
