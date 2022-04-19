@@ -10,7 +10,6 @@ struct PingEntry : public TLVEntry
 public:
     PingEntry() : TLVEntry(PING, 1){};
     ~PingEntry(){};
-    TLVEntry *process(JsonObject *configuration) override;
 
     int size() override { return sizeof(type) + sizeof(length) + 1; };
 

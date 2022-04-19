@@ -9,6 +9,8 @@
 #include "ArduinoJson.h"
 #include "WebServer/ConfigurationServer.h"
 #include "Applications/Applications.h"
+#include "map"
+#include "string"
 
 #define DEBUG 1
 
@@ -17,12 +19,15 @@ LayerStack networkStack;
 PhysicalLayer *physicalLayer = &PhysicalLayer::GetInstance();
 
 const uint8_t nrOfBufferLayers = 3;
-BufferLayer *bufferLayers[nrOfBufferLayers]; 
+BufferLayer *bufferLayers[nrOfBufferLayers];
 
 // ----- Applications -----
 PingPongApp *pingPongApp = new PingPongApp();
+PongApp *pongApp = new PongApp();
 
-Application* currentApplication = nullptr;
+// std::map<std::string, Application *> applications;
+
+Application *currentApplication = nullptr;
 
 // ----- WebServer -----
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
@@ -48,6 +53,15 @@ void loadConfig()
   Serial.print("Config: ");
   Serial.println(config.c_str());
 
+  // if (root.containsKey("application"))
+  // {
+
+  //   if (applications.find(root["application"]) != applications.end())
+  //   {
+  //     currentApplication = applications[root["application"]];
+  //   }
+  // }
+
   networkStack.loadConfig(&root);
 }
 
@@ -63,18 +77,29 @@ void setup()
   physicalLayer->init(433E6);
 
   // Init the buffer layers
-  for (uint8_t i = 0; i < nrOfBufferLayers; i++) {
+  for (uint8_t i = 0; i < nrOfBufferLayers; i++)
+  {
     bufferLayers[i] = new BufferLayer();
   }
 
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
   networkStack.addLayer(bufferLayers[0]);
-  networkStack.addLayer(new EncryptionLayer(ENC_AES));
-  networkStack.addLayer(bufferLayers[1]);
-  networkStack.addLayer(new TransportLayer());
-  networkStack.addLayer(bufferLayers[2]);
-  networkStack.addLayer(pingPongApp);
+ // networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  // networkStack.addLayer(bufferLayers[1]);
+  // networkStack.addLayer(new TransportLayer());
+  // networkStack.addLayer(bufferLayers[2]);
+
+
+
+  //networkStack.addLayer(pingPongApp);
+  //currentApplication = pingPongApp;
+
+  networkStack.addLayer(pongApp);
+    currentApplication = pongApp;
+
+
+
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -83,12 +108,15 @@ void setup()
     throw "An Error has occurred while mounting SPIFFS";
   }
 
+  // Application setup
+  // applications.insert(std::make_pair("PingPong", pingPongApp));
+
   // Load configuration
   loadConfig();
 
   // WiFi setup
   // TODO replace with digitalRead or something similar
-  const bool enableWebserver = true;
+  const bool enableWebserver = false;
   if (enableWebserver)
   {
     configServer->init();
@@ -105,12 +133,7 @@ void setup()
       request->send(200, "application/json", "{}"); });
   }
 
-
-  // Set current application
-  currentApplication = pingPongApp;
-
-
-  pinMode(2, OUTPUT);
+  pinMode(15, OUTPUT);
 }
 
 void loop()
@@ -120,12 +143,15 @@ void loop()
     configServer->dnsServer.processNextRequest();
   }
 
-  if (!networkStack.step() && !( currentApplication && !currentApplication->run())) {
+  if (!networkStack.step() && !(currentApplication && !currentApplication->run()))
+  {
     // Keep running
-    digitalWrite(2, HIGH);
-  } else {
+    digitalWrite(15, HIGH);
+  }
+  else
+  {
 
     // Sleep
-    digitalWrite(2, LOW);
+    digitalWrite(15, LOW);
   }
 }

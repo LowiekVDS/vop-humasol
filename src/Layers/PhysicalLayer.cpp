@@ -72,7 +72,9 @@ void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
     {
         if ((*jsonConfig)["type"] == "Receiver")
         {
+            Serial.println("OK");
             LoRa.receive();
+            this->state = 1;
         }
         else
         {
@@ -91,6 +93,11 @@ void PhysicalLayer::up(uint8_t *payload, uint8_t length)
 
 void PhysicalLayer::down(uint8_t *payload, uint8_t length)
 {
+
+    Serial.println("GOT SOMETHN");
+    Serial.println(length);
+    Serial.write(payload, length);
+
     assert(this->frequency);
 
     if (length > 255)
@@ -101,5 +108,11 @@ void PhysicalLayer::down(uint8_t *payload, uint8_t length)
     // Actually send the thing to LoRa
     LoRa.beginPacket();
     LoRa.write(payload, length);
+    //LoRa.write((uint8_t*) "Hello world!", 12);
     LoRa.endPacket();
+
+    if (this->state == 1) {
+        LoRa.receive();
+    }
+    
 }

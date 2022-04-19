@@ -6,5 +6,7 @@ void TransportLayer::up(uint8_t* payload, uint8_t length)
 };
 
 void TransportLayer::down(uint8_t* payload, uint8_t length) {
+    
+    Serial.println("GOT SOMETHN TRANSPORT");
     downLayer->down(payload, length);
 };

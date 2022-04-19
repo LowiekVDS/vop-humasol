@@ -21,7 +21,7 @@ protected:
     JsonObject *configuration;
 
 public:
-    ApplicationLayer() : TopTerminalLayer(){};
+    ApplicationLayer() : TopTerminalLayer(), m_bufferSize(0) {};
 
     void down(uint8_t *payload, uint8_t length) override;
 

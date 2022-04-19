@@ -8,25 +8,21 @@
 #define PUMP_OPEN 0x00
 #define PUMP_CLOSE 0xff
 
-struct PumpStateEntry : public TLVEntry{
-    public:
-        uint8_t state; // PUMP_OPEN or PUMP_CLOSE
-    public:
-        PumpStateEntry(uint8_t state=0): TLVEntry(PUMP_STATE, 1), state(state){};
-        ~PumpStateEntry(){};
+struct PumpStateEntry : public TLVEntry
+{
+public:
+    uint8_t state; // PUMP_OPEN or PUMP_CLOSE
 
-    public:
-        void encode(uint8_t*& pointer) override;
-        void decode(uint8_t*& pointer) override;
+    PumpStateEntry(uint8_t state = 0) : TLVEntry(PUMP_STATE, 1), state(state){};
+    ~PumpStateEntry(){};
 
-    public:
-        TLVEntry* process(JsonObject* configuration) override;
+    void encode(uint8_t *&pointer) override;
+    void decode(uint8_t *&pointer) override;
 
+    int size() override { return sizeof(type) + sizeof(length) + sizeof(state); };
 
-    int size() override { return sizeof(type) + sizeof(length) + sizeof(state);};
-    
-    public:
-        void print(char end=' ') override {
-            log("Type: %s\nLength: %d\nState: %s\n%c", "PumpStateEntry", (uint8_t)this->length, this->state==PUMP_CLOSE?"PUMP_CLOSE":"PUMP_OPEN", end);
-        } 
+    void print(char end = ' ') override
+    {
+        log("Type: %s\nLength: %d\nState: %s\n%c", "PumpStateEntry", (uint8_t)this->length, this->state == PUMP_CLOSE ? "PUMP_CLOSE" : "PUMP_OPEN", end);
+    }
 };

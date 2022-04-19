@@ -1,7 +1,7 @@
 #include "BufferLayer.h"
 
 void BufferLayer::up(uint8_t *payload, uint8_t length)
-{
+{ Serial.println("GOT SOMETHN BUFFER UP");
 
     if (this->upBuffer.size() >= MAX_BUFFER_SIZE)
     {
@@ -23,6 +23,9 @@ void BufferLayer::up(uint8_t *payload, uint8_t length)
 void BufferLayer::down(uint8_t *payload, uint8_t length)
 {
 
+
+    Serial.println("GOT SOMETHN BUFFER");
+    Serial.println(length);
     if (this->downBuffer.size() >= MAX_BUFFER_SIZE)
     {
         this->log("DOWN-BUFFER OVERFLOW", ERROR);
@@ -55,8 +58,14 @@ boolean BufferLayer::stepDown() {
 
     if (this->downBuffer.size() == 0) return false;
 
+    Serial.println("Length");
+
+
     Payload payloadToPushDown = this->downBuffer.front();
+    Serial.println(payloadToPushDown.length);
+
     this->downLayer->down(payloadToPushDown.payload, payloadToPushDown.length);
+
     this->downBuffer.pop();
 
     return this->downBuffer.size() == 0;
