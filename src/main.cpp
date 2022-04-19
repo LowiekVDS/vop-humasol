@@ -21,7 +21,8 @@ BufferLayer *bufferLayers[nrOfBufferLayers];
 
 // ----- Applications -----
 PingPongApp *pingPongApp = new PingPongApp();
-
+DispatcherApp *dispatchApp = new DispatcherApp();
+ControllerApp *dispatchApp = new ControllerApp();
 Application* currentApplication = nullptr;
 
 // ----- WebServer -----
