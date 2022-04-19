@@ -15,12 +15,18 @@ void PingPongApp::up(uint8_t *payload, uint8_t length)
         {
             this->state = RECEIVED_PONG;
         }
+        else if (entry->type == PING)
+        {
+            this->addEntry(TLVEntry::CreateFromType(PONG));
+        }
+
+        it = entries.erase(it);
     }
 
     this->flush();
 }
 
-bool PingPongApp::run()
+bool PingPongApp::step()
 {
 
     switch (this->state)

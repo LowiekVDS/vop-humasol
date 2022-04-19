@@ -8,7 +8,7 @@
 struct PingEntry : public TLVEntry
 {
 public:
-    PingEntry(uint8_t level = 0) : TLVEntry(PING, 1){};
+    PingEntry() : TLVEntry(PING, 1){};
     ~PingEntry(){};
     TLVEntry *process(JsonObject *configuration) override;
 

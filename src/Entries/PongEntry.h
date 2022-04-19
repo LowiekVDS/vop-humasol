@@ -8,9 +8,8 @@
 struct PongEntry : public TLVEntry
 {
 public:
-    PongEntry(uint8_t level = 0) : TLVEntry(PONG, 1){};
+    PongEntry() : TLVEntry(PONG, 1){};
     ~PongEntry(){};
-    TLVEntry *process(JsonObject *configuration) override;
 
     int size() override { return sizeof(type) + sizeof(length) + 1; };
 

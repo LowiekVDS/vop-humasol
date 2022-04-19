@@ -1,5 +1,6 @@
 #include "TLVEntry.h"
 #include "Entries.h"
+#include <stdexcept>
 
 TLVEntry *TLVEntry::CreateFromType(uint8_t type)
 {
@@ -21,9 +22,20 @@ TLVEntry *TLVEntry::CreateFromType(uint8_t type)
         PumpStateEntry *pump = new PumpStateEntry();
         return (TLVEntry *) pump;
     }
+    case PING:
+    {
+        PingEntry *ping = new PingEntry();
+        return (TLVEntry *) ping;
+    }
+    case PONG:
+    {
+        PongEntry *pong = new PongEntry();
+        return (TLVEntry *) pong;
+    }
     default:
     {
-        return nullptr;
+        Serial.println("*TLVEntry::CreateFromType > Received unvalid type");
+        throw std::invalid_argument( "*TLVEntry::CreateFromType > Received unvalid type" );
     }
     }
 }

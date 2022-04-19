@@ -15,7 +15,7 @@ class PingPongApp : public Application {
         unsigned long timeSent;
         PingPongAppStates state;
 
-        const unsigned long MAX_TIMEOUT = 30000; 
+        const unsigned long MAX_TIMEOUT = 10000; 
 
     public:
         PingPongApp() : Application(), timeSent(), state(IDLE) {};
@@ -23,5 +23,5 @@ class PingPongApp : public Application {
     
         void up(uint8_t* payload, uint8_t length) override;
 
-        bool run() override;
+        bool step() override;
 };
