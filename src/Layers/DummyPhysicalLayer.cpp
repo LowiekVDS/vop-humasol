@@ -1,7 +1,6 @@
 #include <vector>
 #include "DummyPhysicalLayer.h"
 #include "Layer.h"
-#include "../Utils.h"
 #include <LoRa.h>
 #include <assert.h>
 

@@ -40,9 +40,11 @@ void BufferLayer::down(uint8_t *payload, uint8_t length)
     return;
 }
 
-boolean BufferLayer::stepUp() {
+boolean BufferLayer::stepUp()
+{
 
-    if (this->upBuffer.size() == 0) return false;
+    if (this->upBuffer.size() == 0)
+        return false;
 
     Payload payloadToPushUp = this->upBuffer.front();
     this->upLayer->up(payloadToPushUp.payload, payloadToPushUp.length);
@@ -51,12 +53,16 @@ boolean BufferLayer::stepUp() {
     return this->upBuffer.size() == 0;
 }
 
-boolean BufferLayer::stepDown() {
+boolean BufferLayer::stepDown()
+{
 
-    if (this->downBuffer.size() == 0) return false;
+    if (this->downBuffer.size() == 0)
+        return false;
 
     Payload payloadToPushDown = this->downBuffer.front();
+
     this->downLayer->down(payloadToPushDown.payload, payloadToPushDown.length);
+
     this->downBuffer.pop();
 
     return this->downBuffer.size() == 0;

@@ -1,6 +1,6 @@
 #include "TransportLayer.h"
 
-void TransportLayer::up(uint8_t* payload, uint8_t length)
+void TransportLayer::up(uint8_t *payload, uint8_t length)
 {
     // Parse Header
     TransportLayerHeader header = TransportLayerHeader(payload);

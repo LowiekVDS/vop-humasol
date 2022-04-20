@@ -16,14 +16,3 @@ void PumpStateEntry::decode(uint8_t *&pointer)
     state = *pointer;
     pointer++;
 }
-
-TLVEntry* PumpStateEntry::process(JsonObject* configuration)
-{
-    if (this->state == PUMP_CLOSE){
-        log("Pumping halted!\n");
-    } else if (this->state == PUMP_OPEN) {
-        log("Pumping pending...\n");
-    }
-
-    return nullptr;
-}
