@@ -1,7 +1,7 @@
 #pragma once
-#include "TransportLayer.h"
+#include "Layer.h"
 
-class TimeoutPacket{
+class TimeoutPacket {
     public:
         unsigned long send_time;
         uint8_t* transport_data;
@@ -9,6 +9,7 @@ class TimeoutPacket{
 
     public:
         TimeoutPacket(uint8_t* buffer, unsigned long send_time) : send_time(send_time),transport_data(buffer){};
+        ~TimeoutPacket() {};
     public:
-        void resend(TransportLayer* layer);
+        void resend(Layer* layer);
 };

@@ -9,10 +9,16 @@ void BufferLayer::up(uint8_t *payload, uint8_t length)
     }
     else
     {
-
         Payload *payloadStruct = new Payload();
         payloadStruct->length = length;
         payloadStruct->payload = payload;
+
+        for (auto i = 0; i < payloadStruct->length; i++)
+        {
+            Serial.print(payloadStruct->payload[i], HEX);
+            Serial.print(' ');
+        }
+        Serial.println();
 
         this->upBuffer.push(*payloadStruct);
     }
@@ -33,7 +39,6 @@ void BufferLayer::down(uint8_t *payload, uint8_t length)
         Payload *payloadStruct = new Payload();
         payloadStruct->length = length;
         payloadStruct->payload = payload;
-
         this->downBuffer.push(*payloadStruct);
     }
 

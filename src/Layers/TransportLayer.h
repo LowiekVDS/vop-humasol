@@ -41,6 +41,7 @@ class TransportLayer : public Layer
     uint16_t m_lastTimeoutCheck;
 public:
     TransportLayer() : Layer(), m_lastPID(0), m_lastTimeoutCheck(0){};
+    ~TransportLayer() {};
 
 public:
     void up(uint8_t *payload, uint8_t length);

@@ -53,8 +53,12 @@ std::vector<TLVEntry *> ApplicationLayer::extractEntries(uint8_t *payload, uint8
 
     while ((pointer - payload) < length)
     {
+        Serial.println(*pointer);
         if (!isType(*pointer))
+        {
+            Serial.println("[APP]> Warning, dropped a package due to unreadable entry type");
             break;
+        }
 
         TLVEntry *e = TLVEntry::CreateFromType(*pointer);
         e->decode(pointer);

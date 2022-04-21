@@ -41,6 +41,9 @@ void TransportLayer::down(uint8_t* payload, uint8_t length) {
     
     // Send to down layer
     downLayer->down(new_payload, new_length);
+
+    // Add to sentPackets
+    m_sentpackets.insert(std::make_pair(m_lastPID, TimeoutPacket(new_payload, millis())));
 };
 
 bool TransportLayer::step() {
@@ -51,6 +54,7 @@ bool TransportLayer::step() {
         if (millis() - it->second.send_time > TIMEOUT_LENGTH)
         {
             it->second.resend(this);
+            it->second.send_time = millis();
         }
     }
 }

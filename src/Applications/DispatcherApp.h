@@ -10,9 +10,9 @@ class DispatcherApp : public Application {
         ~DispatcherApp() {};
 
     public:
-        void up(uint8_t* payload, uint8_t length) override;
+        void up(uint8_t* payload, uint8_t length) override {};
     public:
-        bool run() override;
+        bool step() override;
     public:
         void runPump();
         void runBattery();
