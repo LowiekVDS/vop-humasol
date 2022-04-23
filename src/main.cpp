@@ -72,22 +72,19 @@ void setup()
   // Init the buffer layers
   for (uint8_t i = 0; i < nrOfBufferLayers; i++)
   {
-    bufferLayers[i] = new BufferLayer();
+    bufferLayers[i] = new BufferLayer(i);
   }
 
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
   networkStack.addLayer(bufferLayers[0]);
-  networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  networkStack.addLayer(new TransportLayer());
   // networkStack.addLayer(bufferLayers[1]);
-  // networkStack.addLayer(new TransportLayer());
+  // networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[2]);
 
-   networkStack.addLayer(pingPongApp);
-  // currentApplication = pingPongApp;
-
-  //networkStack.addLayer(pongApp);
-  // currentApplication = pongApp;
+  networkStack.addLayer(pingPongApp);
+  // networkStack.addLayer(pongApp);
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -120,8 +117,6 @@ void setup()
       
       request->send(200, "application/json", "{}"); });
   }
-
-  pinMode(15, OUTPUT);
 }
 
 void loop()
@@ -134,7 +129,7 @@ void loop()
 
   delay(1);
 
-// Serial.println("TEST");
+  // Serial.println("TEST");
   // delay(100);
 
   // if (!networkStack.step())

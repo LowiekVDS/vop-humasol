@@ -3,6 +3,7 @@
 #include "Layer.h"
 #include <LoRa.h>
 #include <assert.h>
+#include "Utils.h"
 
 #include "Env.h"
 
@@ -88,8 +89,10 @@ void PhysicalLayer::down(uint8_t *payload, uint8_t length)
 
     if (DEBUG)
     {
-        Serial.print("[PHY]> Sending something! Packetsize ");
-        Serial.println(length);
+        Serial.print("[PHY]> Sending packet, packetsize ");
+        Serial.print(length);
+        Serial.print(", data: ");
+        printBuffer(payload, length);
     }
     assert(this->frequency);
 

@@ -3,7 +3,7 @@
 #include "TimeoutPacket.h"
 #include <map>
 // #include <vector>
-#define TIMEOUT_LENGTH 30*1000 // in ms; 30 s
+#define TIMEOUT_LENGTH 10*1000 // in ms; 30 s
 #define TIMEOUT_CHECK_INTERVAL 5000 // in ms; 5 s
 
 
