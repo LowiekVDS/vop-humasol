@@ -5,10 +5,12 @@
 #include <DNSServer.h>
 #include "WiFi.h"
 #include "SPIFFS.h"
+#include "Arduino.h"
 #include "AsyncJson.h"
 #include "ArduinoJson.h"
 #include "WebServer/ConfigurationServer.h"
 #include "Applications/Applications.h"
+
 
 #define DEBUG 1
 
@@ -22,7 +24,7 @@ BufferLayer *bufferLayers[nrOfBufferLayers];
 // ----- Applications -----
 PingPongApp *pingPongApp = new PingPongApp();
 DispatcherApp *dispatchApp = new DispatcherApp();
-ControllerApp *dispatchApp = new ControllerApp();
+ControllerApp *controllerApp = new ControllerApp();
 Application* currentApplication = nullptr;
 
 // ----- WebServer -----
@@ -59,7 +61,6 @@ void setup()
   {
     Serial.begin(115200);
   }
-
   // Init the physicalLayer
   physicalLayer->init(433E6);
 
@@ -86,7 +87,6 @@ void setup()
 
   // Load configuration
   loadConfig();
-
   // WiFi setup
   // TODO replace with digitalRead or something similar
   const bool enableWebserver = true;
@@ -110,8 +110,13 @@ void setup()
   // Set current application
   currentApplication = pingPongApp;
 
-
   pinMode(2, OUTPUT);
+  pinMode(GPIO_NUM_27, INPUT);
+
+  // Set up wakeup sources
+  esp_sleep_enable_timer_wakeup(5e6);// In us
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_27, LOW);
+
 }
 
 void loop()
@@ -120,13 +125,13 @@ void loop()
   {
     configServer->dnsServer.processNextRequest();
   }
-
   if (!networkStack.step() && !( currentApplication && !currentApplication->run())) {
     // Keep running
     digitalWrite(2, HIGH);
+    Serial.println("Running");
   } else {
-
-    // Sleep
+    // Go to deepsleep
     digitalWrite(2, LOW);
+    esp_deep_sleep_start();
   }
 }

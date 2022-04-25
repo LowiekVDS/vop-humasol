@@ -2,6 +2,8 @@
 #include "../Entries/Entries.h"
 #define SEND_INTERVAL 1000 // In ms
 
+#define PIN_PUMP_RELAY 20
+
 bool DispatcherApp::run() {
     if (millis()-m_lastSent > SEND_INTERVAL) {
         m_lastSent = millis();
@@ -14,9 +16,10 @@ bool DispatcherApp::run() {
 }
 
 void DispatcherApp::runPump() {
-    uint8_t level = 79;
+    int switch_value = digitalRead(PIN_PUMP_RELAY);
+    
 
-    TLVEntry* entry = new PumpStateEntry(PUMP_OPEN); // TODO: Actually read the state from the pump
+    TLVEntry* entry = new PumpStateEntry(switch_value?PUMP_CLOSE:PUMP_OPEN); // TODO: Actually read the state from the pump
     this->addEntry(entry);
 
 }
