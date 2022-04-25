@@ -22,14 +22,15 @@ class TransportLayer : public Layer
                 TransportLayerHeader(uint8_t pid, Type type = Type::DATA):pid(pid),type(type){};
                 TransportLayerHeader(uint8_t*& buffer){ decode(buffer); };
             public:
-                void decode(uint8_t*& buffer){
+                inline int size() { return sizeof(pid) + sizeof(type); };
+                void decode(uint8_t* buffer){
                     this->pid = *(uint16_t*)buffer;
                     buffer+=2;
                     this->type = *(Type*)buffer;
                     buffer++;
                     
                 };
-                void encode(uint8_t*& buffer){
+                void encode(uint8_t* buffer){
                     *(uint16_t*)buffer = this->pid;
                     buffer+=2;
                     *(Type*)buffer = this->type;

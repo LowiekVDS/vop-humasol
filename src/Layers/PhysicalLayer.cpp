@@ -24,7 +24,6 @@ void PhysicalLayer::init(long frequency, int ssPin, int resetPin, int dio0Pin)
 
 void PhysicalLayer::OnReceive(int packetSize)
 {
-
     uint8_t *buffer = new uint8_t[packetSize];
     LoRa.readBytes(buffer, packetSize);
 
@@ -75,6 +74,7 @@ void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
         {
             LoRa.sleep();
         }
+        LoRa.receive();
     }
 }
 

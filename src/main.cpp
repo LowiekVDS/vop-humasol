@@ -26,8 +26,7 @@ BufferLayer *bufferLayers[nrOfBufferLayers];
 PingPongApp *pingPongApp = new PingPongApp();
 DispatcherApp *dispatchApp = new DispatcherApp();
 ControllerApp *controllerApp = new ControllerApp();
-Application* currentApplication = nullptr;
-PongApp *pongApp = new PongApp();
+Application* currentApplication = dispatchApp;
 
 // ----- WebServer -----
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
@@ -60,6 +59,8 @@ void loadConfig()
 
 void setup()
 {
+
+
   // Communication
   if (DEBUG == 1)
   {
@@ -82,7 +83,7 @@ void setup()
   // networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[2]);
 
-   networkStack.addLayer(pingPongApp);
+   networkStack.addLayer(currentApplication);
   // networkStack.addLayer(pongApp);
 
   // SPIFFS setup
@@ -99,7 +100,7 @@ void setup()
   loadConfig();
   // WiFi setup
   // TODO replace with digitalRead or something similar
-  const bool enableWebserver = false;
+  const bool enableWebserver = true;
   if (enableWebserver)
   {
     configServer->init();
@@ -118,30 +119,31 @@ void setup()
 
 
   // Set current application
-  currentApplication = pingPongApp;
-
-  pinMode(2, OUTPUT);
+  // pinMode(2, OUTPUT);
   pinMode(GPIO_NUM_27, INPUT);
-
+  pinMode(GPIO_NUM_26, INPUT);
+  pinMode(GPIO_NUM_25, OUTPUT);
   // Set up wakeup sources
-  esp_sleep_enable_timer_wakeup(5e6);// In us
-  esp_sleep_enable_ext0_wakeup(GPIO_NUM_27, LOW);
+  esp_sleep_enable_timer_wakeup(1e6);// In us
+  // esp_sleep_enable_ext0_wakeup(GPIO_NUM_27, LOW);
 
 }
 
 void loop()
 {
+  digitalWrite(GPIO_NUM_26, HIGH);
   if (configServer->isInitialized())
   {
     configServer->dnsServer.processNextRequest();
   }
-  if (!networkStack.step() && !( currentApplication && !currentApplication->step())) {
+  if (!networkStack.step()) {
     // Keep running
-    digitalWrite(2, HIGH);
+    // digitalWrite(2, HIGH);
     Serial.println("Running");
   } else {
     // Go to deepsleep
-    digitalWrite(2, LOW);
-    esp_deep_sleep_start();
+    // digitalWrite(2, LOW);
+    // esp_deep_sleep_start();
   }
+  delay(1);
 }

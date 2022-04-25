@@ -15,10 +15,10 @@ void TransportLayer::up(uint8_t *payload, uint8_t length)
             Serial.print(payload[i], HEX);
             Serial.print(' ');
         }
-        Serial.print(length);
-        Serial.println(sizeof(TransportLayerHeader));
+        Serial.printf("Length: %d", length);
+        Serial.printf("; Headersize: %d\n", sizeof(TransportLayerHeader));
 
-        upLayer->up(payload, length - sizeof(TransportLayerHeader));
+        upLayer->up(payload+header.size(), length - header.size());
         sendAck(header.pid);
     }
     else if (header.type == TransportLayerHeader::Type::ACK)
@@ -64,7 +64,7 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
     header.encode(pointer);
 
     // Add payload
-    memcpy(pointer, payload, length);
+    memcpy(pointer+header.size(), payload, length);
     
     
     // Send to down layer
@@ -95,14 +95,15 @@ bool TransportLayer::step()
 
 void TransportLayer::sendAck(uint8_t pid)
 {
-    uint8_t *payload = new uint8_t[sizeof(TransportLayerHeader)];
+    TransportLayerHeader header(pid, TransportLayerHeader::Type::ACK);
+
+    uint8_t *payload = new uint8_t[header.size()];
     uint8_t *pointer = &payload[0];
 
-    TransportLayerHeader header(pid, TransportLayerHeader::Type::ACK);
     header.encode(pointer);
 
     Serial.print("[TRANSPORT]> Sending ACK for PID ");
     Serial.println(pid);
 
-    downLayer->down(payload, sizeof(TransportLayerHeader));
+    downLayer->down(payload, header.size());
 };

@@ -6,7 +6,7 @@ class DispatcherApp : public Application {
     private:
         unsigned long m_lastSent;
     public:
-        DispatcherApp() : Application() {};
+        DispatcherApp() : Application(), m_lastSent(0) {};
         ~DispatcherApp() {};
 
     public:
