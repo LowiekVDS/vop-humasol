@@ -27,6 +27,8 @@ private:
     int resetPin;
     int dio0Pin;
 
+    int state = 0;
+
     /**
      * @brief Makes sure this class acts like a singleton
      */

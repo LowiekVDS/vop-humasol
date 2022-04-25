@@ -17,9 +17,10 @@ class BufferLayer : public Layer
 private:
     std::queue<Payload> upBuffer;
     std::queue<Payload> downBuffer;
+    uint8_t id;
 
 public:
-    BufferLayer() : Layer() {}
+    BufferLayer(uint8_t id) : Layer(), id(id) {}
 
     /**
      * The up and down methods only put new payload pointers in the buffers.

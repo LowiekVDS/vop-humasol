@@ -15,6 +15,15 @@ inline void logInit()
 #endif
 }
 
+inline void printBuffer(uint8_t* payload, uint8_t length) {
+    for (auto i = 0; i < length; i++)
+    {
+        Serial.print(payload[i], HEX);
+        Serial.print(' ');
+    }
+    Serial.println();
+}
+
 inline void log(const char* format, ...)
 {
     #if TARGET == WINDOWS

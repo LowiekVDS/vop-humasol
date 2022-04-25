@@ -10,22 +10,24 @@
 #include "ArduinoJson.h"
 #include "WebServer/ConfigurationServer.h"
 #include "Applications/Applications.h"
+#include "map"
+#include "string"
 
-
-#define DEBUG 1
+#include "Env.h"
 
 // ----- Network stack & layers -----
 LayerStack networkStack;
 PhysicalLayer *physicalLayer = &PhysicalLayer::GetInstance();
 
 const uint8_t nrOfBufferLayers = 3;
-BufferLayer *bufferLayers[nrOfBufferLayers]; 
+BufferLayer *bufferLayers[nrOfBufferLayers];
 
 // ----- Applications -----
 PingPongApp *pingPongApp = new PingPongApp();
 DispatcherApp *dispatchApp = new DispatcherApp();
 ControllerApp *controllerApp = new ControllerApp();
 Application* currentApplication = nullptr;
+PongApp *pongApp = new PongApp();
 
 // ----- WebServer -----
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
@@ -48,9 +50,11 @@ void loadConfig()
 
   configuration = &root;
 
-  Serial.print("Config: ");
-  Serial.println(config.c_str());
+  #if DEBUG
 
+    Serial.print("Config: ");
+    Serial.println(config.c_str());
+  #endif
   networkStack.loadConfig(&root);
 }
 
@@ -65,18 +69,21 @@ void setup()
   physicalLayer->init(433E6);
 
   // Init the buffer layers
-  for (uint8_t i = 0; i < nrOfBufferLayers; i++) {
-    bufferLayers[i] = new BufferLayer();
+  for (uint8_t i = 0; i < nrOfBufferLayers; i++)
+  {
+    bufferLayers[i] = new BufferLayer(i);
   }
 
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
   networkStack.addLayer(bufferLayers[0]);
-  networkStack.addLayer(new EncryptionLayer(ENC_AES));
-  networkStack.addLayer(bufferLayers[1]);
   networkStack.addLayer(new TransportLayer());
+  // networkStack.addLayer(bufferLayers[1]);
+  // networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[2]);
+
   networkStack.addLayer(pingPongApp);
+  // networkStack.addLayer(pongApp);
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -84,6 +91,9 @@ void setup()
     Serial.println("An Error has occurred while mounting SPIFFS");
     throw "An Error has occurred while mounting SPIFFS";
   }
+
+  // Application setup
+  // applications.insert(std::make_pair("PingPong", pingPongApp));
 
   // Load configuration
   loadConfig();
@@ -125,7 +135,7 @@ void loop()
   {
     configServer->dnsServer.processNextRequest();
   }
-  if (!networkStack.step() && !( currentApplication && !currentApplication->run())) {
+  if (!networkStack.step() && !( currentApplication && !currentApplication->step())) {
     // Keep running
     digitalWrite(2, HIGH);
     Serial.println("Running");

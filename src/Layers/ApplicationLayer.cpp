@@ -2,8 +2,10 @@
 #include "Entries/TLVEntry.h"
 #include "ArduinoJson.h"
 #include <vector>
+#include "Env.h"
 
-void ApplicationLayer::loadConfig(JsonObject* jsonConfig) {
+void ApplicationLayer::loadConfig(JsonObject *jsonConfig)
+{
     this->configuration = jsonConfig;
 }
 
@@ -20,6 +22,10 @@ void ApplicationLayer::addEntry(TLVEntry *entry)
 
 void ApplicationLayer::flush()
 {
+
+    if (m_bufferSize == 0)
+        return;
+
     uint8_t *payload = new uint8_t[m_bufferSize]{0}; // Sets buffer to 0;
     uint8_t *pointer = &payload[0];
 
@@ -46,10 +52,24 @@ std::vector<TLVEntry *> ApplicationLayer::extractEntries(uint8_t *payload, uint8
 
     std::vector<TLVEntry *> entries;
 
+                for (auto i = 0; i < length; i++)
+        {
+            Serial.print(payload[i], HEX);
+            Serial.print(' ');
+        }
+        Serial.println();
+
     while ((pointer - payload) < length)
     {
         if (!isType(*pointer))
+        {
+            if (DEBUG) {
+                Serial.println("[APP]> Warning, dropped an entry due to unreadable entry type. Or it could be the end of the entries in the package.");
+            }
             break;
+        } else {
+
+        }
 
         TLVEntry *e = TLVEntry::CreateFromType(*pointer);
         e->decode(pointer);

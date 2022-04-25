@@ -16,12 +16,3 @@ void PumpLevelEntry::decode(uint8_t *&pointer)
     level = *pointer;
     pointer++;
 }
-
-TLVEntry* PumpLevelEntry::process(JsonObject* configuration)
-{
-    if (this->level>85){
-        log("Pumping halted.\n");
-    }
-
-    return nullptr;
-}

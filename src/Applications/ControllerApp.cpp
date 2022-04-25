@@ -34,7 +34,7 @@ void ControllerApp::up(uint8_t* payload, uint8_t length) {
     this->flush();
 }
 
-bool ControllerApp::run() {
+bool ControllerApp::step() {
     if (this->m_newPumpState != this->m_pumpState){
         this->m_pumpState = this->m_newPumpState;
         digitalWrite(15, m_pumpState); // TODO: Select the appropriate pin

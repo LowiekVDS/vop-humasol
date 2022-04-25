@@ -17,5 +17,5 @@ class ControllerApp : public Application {
     public:
         void up(uint8_t* payload, uint8_t length) override;
     public:
-        bool run() override;
+        bool step() override;
 };
