@@ -82,7 +82,7 @@ void setup()
   // networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[2]);
 
-  networkStack.addLayer(pingPongApp);
+   networkStack.addLayer(pingPongApp);
   // networkStack.addLayer(pongApp);
 
   // SPIFFS setup
@@ -99,7 +99,7 @@ void setup()
   loadConfig();
   // WiFi setup
   // TODO replace with digitalRead or something similar
-  const bool enableWebserver = true;
+  const bool enableWebserver = false;
   if (enableWebserver)
   {
     configServer->init();

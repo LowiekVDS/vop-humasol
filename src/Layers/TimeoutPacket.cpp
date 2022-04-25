@@ -9,7 +9,6 @@ TimeoutPacket::TimeoutPacket(uint8_t *buffer, uint8_t length, unsigned long send
 
 void TimeoutPacket::resend(Layer* layer)
 {
-    printBuffer(this->transport_data, this->transport_data_size);
     layer->down(this->transport_data, transport_data_size);
     delete[] this->transport_data;
 }
