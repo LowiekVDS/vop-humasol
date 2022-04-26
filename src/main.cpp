@@ -27,6 +27,9 @@ DispatcherApp *dispatchApp = new DispatcherApp();
 ControllerApp *controllerApp = new ControllerApp();
 PongApp *pongApp = new PongApp();
 
+DemoTransmitterApp *demoTransApp = new DemoTransmitterApp();
+DemoReceiverApp *demoRecApp = new DemoReceiverApp();
+
 // ----- WebServer -----
 ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
 
@@ -83,8 +86,8 @@ void setup()
   // networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[2]);
 
-   networkStack.addLayer(pingPongApp);
-  // networkStack.addLayer(pongApp);
+   //networkStack.addLayer(pingPongApp);
+  networkStack.addLayer(pongApp);
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -118,7 +121,8 @@ void setup()
       request->send(200, "application/json", "{}"); });
   }
 
-  
+  pinMode(27, OUTPUT);
+  digitalWrite(27, HIGH);
   // Go to sleep for a few seconds
 }
 

@@ -6,7 +6,9 @@
 #define PUMP_STATE 0b0011 // 3
 #define PING 0b0100 // 4
 #define PONG 0b0101 // 5
+#define PUMP_ON 0b0110 
+#define PUMP_OFF 0b0111
 
 inline bool isType(uint8_t type) {
-    return (type>=BATTERY_LEVEL) && (type <= PONG);
+    return (type>=BATTERY_LEVEL) && (type <= PUMP_OFF);
 };
