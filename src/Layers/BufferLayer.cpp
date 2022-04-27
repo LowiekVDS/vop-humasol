@@ -38,8 +38,8 @@ void BufferLayer::down(uint8_t *payload, uint8_t length)
     }
     else
     {
-
         Payload *payloadStruct = new Payload();
+
         payloadStruct->length = length;
         payloadStruct->payload = new uint8_t[length];
         memcpy(payloadStruct->payload, payload, length);
@@ -66,14 +66,12 @@ boolean BufferLayer::stepUp()
     {
         Serial.print("[BFR ");
         Serial.print(this->id);
-        Serial.print("]> Sending something up");
+        Serial.print("]> Sending something up ");
     }
     Payload payloadToPushUp = this->upBuffer.front();
-    printBuffer(payloadToPushUp.payload, payloadToPushUp.length);
     this->upLayer->up(payloadToPushUp.payload, payloadToPushUp.length);
 
     delete[] payloadToPushUp.payload;
-    delete &payloadToPushUp;
 
     this->upBuffer.pop();
 
@@ -97,8 +95,7 @@ boolean BufferLayer::stepDown()
     printBuffer(payloadToPushDown.payload, payloadToPushDown.length);
     this->downLayer->down(payloadToPushDown.payload, payloadToPushDown.length);
 
-    delete[] payloadToPushDown.payload;
-    delete &payloadToPushDown;
+    // delete[] payloadToPushDown.payload;
 
     this->downBuffer.pop();
 

@@ -3,9 +3,9 @@
 #include "TimeoutPacket.h"
 #include <map>
 // #include <vector>
-#define TIMEOUT_LENGTH 10 * 1000    // in ms; 30 s
+#define TIMEOUT_LENGTH 1000    // in ms; 30 s
 #define TIMEOUT_CHECK_INTERVAL 5000 // in ms; 5 s
-#define MAX_RETRANSMISSIONS 10
+#define MAX_RETRANSMISSIONS 9999
 
 class TransportLayer : public Layer
 {
@@ -29,14 +29,14 @@ public:
             this->pid = *(uint16_t *)buffer;
             buffer += 2;
             this->type = *(Type *)buffer;
-            buffer++;
+            buffer -= 2;
         };
         void encode(uint8_t *&buffer)
         {
             *(uint16_t *)buffer = this->pid;
             buffer += 2;
             *(Type *)buffer = this->type;
-            buffer++;
+            buffer -= 2;
         };
     };
     std::map<uint16_t, TimeoutPacket> m_sentpackets;

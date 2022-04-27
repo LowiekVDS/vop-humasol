@@ -11,11 +11,10 @@ void TransportLayer::up(uint8_t *payload, uint8_t length)
 
         Serial.print("[TRANSPORT]> Received DATA with PID ");
         Serial.print(header.pid);
-        Serial.print(", and data (excl. header): ");
+        Serial.print(", and data (incl. 3-byte header): ");
         printBuffer(payload, length);
 
-        upLayer->up(payload, length - 3);
-
+        upLayer->up(payload + 3, length - 3);
         sendAck(header.pid);
     }
     else if (header.type == TransportLayerHeader::Type::ACK)
@@ -28,7 +27,6 @@ void TransportLayer::up(uint8_t *payload, uint8_t length)
             {
                 Serial.println("Erasing the corresponding timeoutpacket");
                 auto correspondingPacket = m_sentpackets.erase(it);
-                delete &correspondingPacket->second;
                 break;
             }
         }
@@ -44,14 +42,13 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
     // Create new buffer
     uint8_t new_length = length + 3; // Our header is 3 bytes long
     uint8_t *new_payload = new uint8_t[new_length];
-    uint8_t *pointer = &new_payload[0];
 
     // Write Transport Header
     TransportLayerHeader header(++m_lastPID, TransportLayerHeader::Type::DATA);
-    header.encode(pointer);
+    header.encode(new_payload);
 
     // Add payload
-    memcpy(pointer, payload, length);
+    memcpy(new_payload + 3, payload, length);
 
     // Send to down layer
     Serial.print("[TRANSPORT]> Sending payload with PID ");
@@ -60,7 +57,7 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
     downLayer->down(new_payload, new_length);
 
     // Add to sentPackets
-    m_sentpackets.insert(std::make_pair(m_lastPID, *(new TimeoutPacket(new_payload, new_length, millis()))));
+    m_sentpackets.insert(std::make_pair(m_lastPID, TimeoutPacket(new_payload, new_length, millis())));
 };
 
 bool TransportLayer::step()
@@ -78,13 +75,15 @@ bool TransportLayer::step()
                     Serial.print(it->first);
                     Serial.println(", Reason: exceeded MAX_RETRANSMISSIONS");
                     auto correspondingPacket = m_sentpackets.erase(it);
-                    delete &correspondingPacket->second;
+                    break;
                 }
                 else
                 {
                     Serial.print("[TRANSPORT]> Resending packet with PID ");
                     Serial.println(it->first);
-                    it->second.resend(this);
+
+                    it->second.nr_of_resends++;
+                    this->downLayer->down(it->second.transport_data, it->second.transport_data_size);
                     it->second.send_time = millis();
                 }
             }
@@ -95,10 +94,9 @@ bool TransportLayer::step()
 void TransportLayer::sendAck(uint8_t pid)
 {
     uint8_t *payload = new uint8_t[3]; // Just an ACK, no data. So header size of 3
-    uint8_t *pointer = &payload[0];
 
-    TransportLayerHeader header(pid, TransportLayerHeader::Type::ACK);
-    header.encode(pointer);
+    TransportLayerHeader header = TransportLayerHeader(pid, TransportLayerHeader::Type::ACK);
+    header.encode(payload);
 
     Serial.print("[TRANSPORT]> Sending ACK for PID ");
     Serial.println(pid);

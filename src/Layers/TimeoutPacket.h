@@ -10,7 +10,5 @@ public:
     uint8_t nr_of_resends;
 
     TimeoutPacket(uint8_t *buffer, uint8_t length, unsigned long send_time);
-    ~TimeoutPacket();
-
-    void resend(Layer *layer);
+    ~TimeoutPacket(){};
 };
