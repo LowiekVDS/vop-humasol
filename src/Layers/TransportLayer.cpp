@@ -8,7 +8,6 @@ void TransportLayer::up(uint8_t *payload, uint8_t length)
 
     if (header.type == TransportLayerHeader::Type::DATA)
     {
-
         Serial.print("[TRANSPORT]> Received DATA with PID ");
         Serial.print(header.pid);
         Serial.print(", and data (incl. 3-byte header): ");
@@ -55,7 +54,7 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
     Serial.println(m_lastPID);
 
     downLayer->down(new_payload, new_length);
-
+    printBuffer(new_payload, new_length);
     // Add to sentPackets
     m_sentpackets.insert(std::make_pair(m_lastPID, TimeoutPacket(new_payload, new_length, millis())));
 };

@@ -78,9 +78,9 @@ void setup()
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
   networkStack.addLayer(bufferLayers[0]);
+  networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  networkStack.addLayer(bufferLayers[1]);
   networkStack.addLayer(new TransportLayer());
-  // networkStack.addLayer(bufferLayers[1]);
-  // networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[2]);
 
    networkStack.addLayer(pingPongApp);
@@ -130,5 +130,5 @@ void loop()
   }
   networkStack.step();
 
-  delay(1);
+  delay(10);
 }

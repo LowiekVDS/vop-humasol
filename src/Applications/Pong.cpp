@@ -9,8 +9,6 @@ void PongApp::up(uint8_t *payload, uint8_t length)
 {
     std::vector<TLVEntry *> entries = ApplicationLayer::extractEntries(payload, length);
 
-    this->flush();
-
     for (auto it = entries.begin(); it != entries.end();)
     {
         TLVEntry *entry = *it;

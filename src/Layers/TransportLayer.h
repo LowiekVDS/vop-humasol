@@ -5,7 +5,7 @@
 // #include <vector>
 #define TIMEOUT_LENGTH 1000    // in ms; 30 s
 #define TIMEOUT_CHECK_INTERVAL 5000 // in ms; 5 s
-#define MAX_RETRANSMISSIONS 9999
+#define MAX_RETRANSMISSIONS 3
 
 class TransportLayer : public Layer
 {

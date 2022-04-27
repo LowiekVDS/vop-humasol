@@ -54,7 +54,7 @@ std::vector<TLVEntry *> ApplicationLayer::extractEntries(uint8_t *payload, uint8
         {
             if (DEBUG)
             {
-                Serial.println("[APP]> Warning, dropped an entry due to unreadable entry type. Or it could be the end of the entries in the package.");
+                Serial.println("[APP]> Warning, dropped (a partial) package due to an unreadable entry.");
             }
             break;
         }
@@ -65,12 +65,10 @@ std::vector<TLVEntry *> ApplicationLayer::extractEntries(uint8_t *payload, uint8
                 Serial.print("[APP]> Detected entry of type ");
                 Serial.println(*pointer);
             }
-            break;
+            TLVEntry *e = TLVEntry::CreateFromType(*pointer);
+            e->decode(pointer);
+            entries.push_back(e);
         }
-
-        TLVEntry *e = TLVEntry::CreateFromType(*pointer);
-        e->decode(pointer);
-        entries.push_back(e);
     }
 
     return entries;

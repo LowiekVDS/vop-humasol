@@ -37,7 +37,7 @@ bool PingPongApp::step()
     switch (this->state)
     {
     case IDLE:
-    
+    case TIMEOUT:
     {
 
         if (DEBUG)
