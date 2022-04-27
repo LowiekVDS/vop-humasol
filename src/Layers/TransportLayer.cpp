@@ -54,7 +54,7 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
     Serial.println(m_lastPID);
 
     downLayer->down(new_payload, new_length);
-    printBuffer(new_payload, new_length);
+
     // Add to sentPackets
     m_sentpackets.insert(std::make_pair(m_lastPID, TimeoutPacket(new_payload, new_length, millis())));
 };
@@ -88,6 +88,8 @@ bool TransportLayer::step()
             }
         }
     }
+
+    return m_sentpackets.size() > 0;
 }
 
 void TransportLayer::sendAck(uint8_t pid)

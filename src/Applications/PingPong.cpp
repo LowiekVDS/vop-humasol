@@ -55,7 +55,7 @@ bool PingPongApp::step()
     case WAITING:
     {
                 
-        if (millis() - this->timeSent > 1000) {
+        if (millis() - this->timeSent > 10000) {
             this->state = IDLE;
         }
         return false;

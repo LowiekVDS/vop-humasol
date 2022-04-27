@@ -45,11 +45,11 @@ void BufferLayer::down(uint8_t *payload, uint8_t length)
         memcpy(payloadStruct->payload, payload, length);
         if (DEBUG)
         {
-            Serial.print("[BFR ");
-            Serial.print(this->id);
-            Serial.print("]> Putting something in down-buffer: ");
+            // Serial.print("[BFR ");
+            // Serial.print(this->id);
+            // Serial.print("]> Putting something in down-buffer: ");
         }
-        printBuffer(payloadStruct->payload, payloadStruct->length);
+        // printBuffer(payloadStruct->payload, payloadStruct->length);
         this->downBuffer.push(*payloadStruct);
     }
 
@@ -77,7 +77,7 @@ boolean BufferLayer::stepUp()
 
     this->upBuffer.pop();
 
-    return this->upBuffer.size() == 0;
+    return true;
 }
 
 boolean BufferLayer::stepDown()
@@ -88,18 +88,18 @@ boolean BufferLayer::stepDown()
 
     if (DEBUG)
     {
-        Serial.print("[BFR ");
-        Serial.print(this->id);
-        Serial.print("]> Sending something down ");
+        // Serial.print("[BFR ");
+        // Serial.print(this->id);
+        // Serial.print("]> Sending something down ");
     }
 
     Payload payloadToPushDown = this->downBuffer.front();
-    printBuffer(payloadToPushDown.payload, payloadToPushDown.length);
+    // printBuffer(payloadToPushDown.payload, payloadToPushDown.length);
     this->downLayer->down(payloadToPushDown.payload, payloadToPushDown.length);
 
     delete[] payloadToPushDown.payload;
 
     this->downBuffer.pop();
 
-    return this->downBuffer.size() == 0;
+    return true;
 }

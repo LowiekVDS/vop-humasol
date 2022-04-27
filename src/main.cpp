@@ -11,6 +11,7 @@
 #include "Applications/Applications.h"
 #include "map"
 #include "string"
+#include "LoRa.h"
 
 #include "Env.h"
 
@@ -120,6 +121,7 @@ void setup()
 
   
   // Go to sleep for a few seconds
+
 }
 
 void loop()
@@ -128,7 +130,17 @@ void loop()
   {
     configServer->dnsServer.processNextRequest();
   }
-  networkStack.step();
+  
+  if (!networkStack.step()) {
+    Serial.println("Going to deep sleep");
+    LoRa.receive();
+    // rtc_gpio_pulldown_en(GPIO_NUM_33);
+     // esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 0);
+ esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 1);
+    esp_deep_sleep_start();
+    
+  } else {
+  }
 
   delay(10);
 }
