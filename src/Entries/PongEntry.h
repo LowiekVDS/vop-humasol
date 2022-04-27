@@ -8,10 +8,10 @@
 struct PongEntry : public TLVEntry
 {
 public:
-    PongEntry() : TLVEntry(PONG, 1){};
+    PongEntry() : TLVEntry(PONG, 0){};
     ~PongEntry(){};
 
-    int size() override { return sizeof(type) + sizeof(length) + 1; };
+    int size() override { return sizeof(type) + sizeof(length); };
 
     void print(char end = ' ') override
     {

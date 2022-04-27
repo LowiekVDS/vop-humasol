@@ -7,11 +7,10 @@ public:
     unsigned long send_time;
     uint8_t *transport_data;
     uint8_t transport_data_size;
+    uint8_t nr_of_resends;
 
-public:
     TimeoutPacket(uint8_t *buffer, uint8_t length, unsigned long send_time);
-    ~TimeoutPacket(){};
+    ~TimeoutPacket();
 
-public:
     void resend(Layer *layer);
 };

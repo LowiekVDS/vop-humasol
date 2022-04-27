@@ -3,11 +3,7 @@
 #include "ArduinoJson.h"
 #include <vector>
 #include "Env.h"
-
-void ApplicationLayer::loadConfig(JsonObject *jsonConfig)
-{
-    this->configuration = jsonConfig;
-}
+#include "Utils.h"
 
 void ApplicationLayer::down(uint8_t *payload, uint8_t length)
 {
@@ -52,23 +48,24 @@ std::vector<TLVEntry *> ApplicationLayer::extractEntries(uint8_t *payload, uint8
 
     std::vector<TLVEntry *> entries;
 
-                for (auto i = 0; i < length; i++)
-        {
-            Serial.print(payload[i], HEX);
-            Serial.print(' ');
-        }
-        Serial.println();
-
     while ((pointer - payload) < length)
     {
         if (!isType(*pointer))
         {
-            if (DEBUG) {
+            if (DEBUG)
+            {
                 Serial.println("[APP]> Warning, dropped an entry due to unreadable entry type. Or it could be the end of the entries in the package.");
             }
             break;
-        } else {
-
+        }
+        else
+        {
+            if (DEBUG)
+            {
+                Serial.print("[APP]> Detected entry of type ");
+                Serial.println(*pointer);
+            }
+            break;
         }
 
         TLVEntry *e = TLVEntry::CreateFromType(*pointer);

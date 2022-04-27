@@ -14,7 +14,7 @@ public:
     virtual ~TLVEntry(){};
 
     virtual void encode(uint8_t *&pointer);
-    virtual void decode(uint8_t *&pointer);
+    virtual bool decode(uint8_t *&pointer);
 
     virtual int size() = 0;
 

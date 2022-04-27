@@ -21,11 +21,11 @@ protected:
     JsonObject *configuration;
 
 public:
-    ApplicationLayer() : TopTerminalLayer(), m_bufferSize(0) {};
+    ApplicationLayer() : TopTerminalLayer(), m_bufferSize(0){};
 
     void down(uint8_t *payload, uint8_t length) override;
 
-    void loadConfig(JsonObject* jsonConfig) override;
+    void loadConfig(JsonObject *jsonConfig) override;
 
     /**
      * @brief Add an entry to the buffer, waiting to be sent

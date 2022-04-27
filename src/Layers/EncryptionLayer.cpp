@@ -56,6 +56,8 @@ uint8_t *EncryptionLayer::decrypt(uint8_t *payload, uint8_t length)
 
         uint8_t *plain_text_buffer = aes.DecryptCBC(payload, length, &key[0], &init_vector[0]);
 
+        payload = plain_text_buffer;
+
         memcpy(payload, plain_text_buffer, length);
     }
     return payload;

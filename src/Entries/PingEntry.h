@@ -8,10 +8,10 @@
 struct PingEntry : public TLVEntry
 {
 public:
-    PingEntry() : TLVEntry(PING, 1){};
+    PingEntry() : TLVEntry(PING, 0){};
     ~PingEntry(){};
 
-    int size() override { return sizeof(type) + sizeof(length) + 1; };
+    int size() override { return sizeof(type) + sizeof(length); };
 
     void print(char end = ' ') override
     {

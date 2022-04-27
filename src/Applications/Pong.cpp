@@ -19,7 +19,7 @@ void PongApp::up(uint8_t *payload, uint8_t length)
         {
             this->addEntry(TLVEntry::CreateFromType(PONG));
         } else {
-            Serial.println("NOT PONG");
+            Serial.println("[PongApp]> Entry is not pong");
         }
         it = entries.erase(it);
     }

@@ -8,14 +8,15 @@
 
 class EncryptionLayer : public Layer
 {
-private:
-    EncryptionType m_eType;
 public:
-    EncryptionLayer(EncryptionType eType) : Layer(), m_eType(eType) {};
-public:
+    EncryptionLayer(EncryptionType eType) : Layer(), m_eType(eType){};
+
     void up(uint8_t *payload, uint8_t length) override;
     void down(uint8_t *payload, uint8_t length) override;
+
 private:
-    uint8_t* encrypt(uint8_t* payload, uint8_t& length);
-    uint8_t* decrypt(uint8_t* payload, uint8_t length);
+    EncryptionType m_eType;
+
+    uint8_t *encrypt(uint8_t *payload, uint8_t &length);
+    uint8_t *decrypt(uint8_t *payload, uint8_t length);
 };

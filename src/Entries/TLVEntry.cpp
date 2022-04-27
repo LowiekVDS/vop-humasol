@@ -20,22 +20,22 @@ TLVEntry *TLVEntry::CreateFromType(uint8_t type)
     case PUMP_STATE:
     {
         PumpStateEntry *pump = new PumpStateEntry();
-        return (TLVEntry *) pump;
+        return (TLVEntry *)pump;
     }
     case PING:
     {
         PingEntry *ping = new PingEntry();
-        return (TLVEntry *) ping;
+        return (TLVEntry *)ping;
     }
     case PONG:
     {
         PongEntry *pong = new PongEntry();
-        return (TLVEntry *) pong;
+        return (TLVEntry *)pong;
     }
     default:
     {
         Serial.println("*TLVEntry::CreateFromType > Received unvalid type");
-        throw std::invalid_argument( "*TLVEntry::CreateFromType > Received unvalid type" );
+        throw std::invalid_argument("*TLVEntry::CreateFromType > Received unvalid type");
     }
     }
 }
@@ -49,7 +49,7 @@ void TLVEntry::encode(uint8_t *&pointer)
     pointer++;
 }
 
-void TLVEntry::decode(uint8_t *&pointer)
+bool TLVEntry::decode(uint8_t *&pointer)
 {
     this->type = *pointer; // todo: ASSERT THIS IS CORRECT WITH ACTUAL VALUE
     pointer++;

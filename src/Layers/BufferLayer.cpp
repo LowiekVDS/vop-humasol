@@ -73,6 +73,7 @@ boolean BufferLayer::stepUp()
     this->upLayer->up(payloadToPushUp.payload, payloadToPushUp.length);
 
     delete[] payloadToPushUp.payload;
+    delete &payloadToPushUp;
 
     this->upBuffer.pop();
 
@@ -97,6 +98,7 @@ boolean BufferLayer::stepDown()
     this->downLayer->down(payloadToPushDown.payload, payloadToPushDown.length);
 
     delete[] payloadToPushDown.payload;
+    delete &payloadToPushDown;
 
     this->downBuffer.pop();
 
