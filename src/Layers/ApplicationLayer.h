@@ -25,8 +25,6 @@ public:
 
     void down(uint8_t *payload, uint8_t length) override;
 
-    void loadConfig(JsonObject *jsonConfig) override;
-
     /**
      * @brief Add an entry to the buffer, waiting to be sent
      *

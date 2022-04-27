@@ -90,7 +90,7 @@ boolean BufferLayer::stepDown()
     {
         Serial.print("[BFR ");
         Serial.print(this->id);
-        Serial.print("]> Sending something down");
+        Serial.print("]> Sending something down ");
     }
 
     Payload payloadToPushDown = this->downBuffer.front();

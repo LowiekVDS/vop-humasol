@@ -49,7 +49,7 @@ void TLVEntry::encode(uint8_t *&pointer)
     pointer++;
 }
 
-bool TLVEntry::decode(uint8_t *&pointer)
+void TLVEntry::decode(uint8_t *&pointer)
 {
     this->type = *pointer; // todo: ASSERT THIS IS CORRECT WITH ACTUAL VALUE
     pointer++;

@@ -54,13 +54,13 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
     memcpy(pointer, payload, length);
 
     // Send to down layer
-    downLayer->down(new_payload, new_length);
-
     Serial.print("[TRANSPORT]> Sending payload with PID ");
     Serial.println(m_lastPID);
 
+    downLayer->down(new_payload, new_length);
+
     // Add to sentPackets
-    m_sentpackets.insert(std::make_pair(m_lastPID, TimeoutPacket(new_payload, new_length, millis())));
+    m_sentpackets.insert(std::make_pair(m_lastPID, *(new TimeoutPacket(new_payload, new_length, millis()))));
 };
 
 bool TransportLayer::step()
@@ -77,6 +77,8 @@ bool TransportLayer::step()
                     Serial.print("[TRANSPORT]> Dropping packet with PID ");
                     Serial.print(it->first);
                     Serial.println(", Reason: exceeded MAX_RETRANSMISSIONS");
+                    auto correspondingPacket = m_sentpackets.erase(it);
+                    delete &correspondingPacket->second;
                 }
                 else
                 {
