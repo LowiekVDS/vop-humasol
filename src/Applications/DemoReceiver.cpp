@@ -16,9 +16,9 @@ void DemoReceiverApp::up(uint8_t *payload, uint8_t length)
         TLVEntry *entry = *it;
 
         if (entry->type == PUMP_OFF) {
-            digitalWrite(26, 0);
+            digitalWrite(27, 1);
         } else if(entry->type == PUMP_ON) {
-            digitalWrite(26, 1);
+            digitalWrite(27, 0);
         }
  
         it = entries.erase(it);

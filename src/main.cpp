@@ -82,12 +82,14 @@ void setup()
   networkStack.addLayer(&PhysicalLayer::GetInstance());
   networkStack.addLayer(bufferLayers[0]);
   networkStack.addLayer(new TransportLayer());
-  // networkStack.addLayer(bufferLayers[1]);
-  // networkStack.addLayer(new EncryptionLayer(ENC_AES));
+  //networkStack.addLayer(bufferLayers[1]);
+  //networkStack.addLayer(new EncryptionLayer(ENC_AES));
   networkStack.addLayer(bufferLayers[2]);
 
+  //networkStack.addLayer(demoRecApp);
+  networkStack.addLayer(demoTransApp);
    //networkStack.addLayer(pingPongApp);
-  networkStack.addLayer(pongApp);
+ //  networkStack.addLayer(pongApp);
 
   // SPIFFS setup
   if (!SPIFFS.begin())
@@ -101,6 +103,7 @@ void setup()
 
   // Load configuration
   loadConfig();
+
 
   // WiFi setup
   // TODO replace with digitalRead or something similar
@@ -122,8 +125,9 @@ void setup()
   }
 
   pinMode(27, OUTPUT);
-  digitalWrite(27, HIGH);
+  pinMode(26, INPUT_PULLDOWN);
   // Go to sleep for a few seconds
+ // digitalWrite(27, 1);
 }
 
 void loop()

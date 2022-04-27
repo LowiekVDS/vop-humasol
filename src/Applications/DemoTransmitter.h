@@ -7,7 +7,7 @@ class DemoTransmitterApp : public Application {
     private:
         unsigned long timeSent;
 
-        const unsigned long SEND_INTERVAL = 10000; 
+        const unsigned long SEND_INTERVAL = 3000; 
 
     public:
         DemoTransmitterApp() : Application(), timeSent() {};

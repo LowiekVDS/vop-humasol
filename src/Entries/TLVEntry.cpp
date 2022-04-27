@@ -32,6 +32,16 @@ TLVEntry *TLVEntry::CreateFromType(uint8_t type)
         PongEntry *pong = new PongEntry();
         return (TLVEntry *) pong;
     }
+    case PUMP_OFF:
+    {
+        PumpOffEntry *p = new PumpOffEntry();
+        return (TLVEntry*) p;
+    }
+    case PUMP_ON:
+    {
+        PumpOnEntry *p = new PumpOnEntry();
+        return (TLVEntry*) p;
+    }
     default:
     {
         Serial.println("*TLVEntry::CreateFromType > Received unvalid type");

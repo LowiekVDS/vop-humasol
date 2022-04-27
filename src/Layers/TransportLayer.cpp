@@ -79,30 +79,31 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
 
 bool TransportLayer::step()
 {
-    if (millis() - m_lastTimeoutCheck > TIMEOUT_CHECK_INTERVAL)
+    // if (millis() - m_lastTimeoutCheck > TIMEOUT_CHECK_INTERVAL)
 
-        for (auto it = m_sentpackets.begin(); it != m_sentpackets.end(); ++it)
-        {
-            if (millis() - it->second.send_time > TIMEOUT_LENGTH)
-            {
-                Serial.print("[TRANSPORT]> Resending packet with PID ");
-                Serial.println(it->first);
-                it->second.resend(this);
-                it->second.send_time = millis();
-            }
-        }
+    //     for (auto it = m_sentpackets.begin(); it != m_sentpackets.end(); ++it)
+    //     {
+    //         if (millis() - it->second.send_time > TIMEOUT_LENGTH)
+    //         {
+    //             Serial.print("[TRANSPORT]> Resending packet with PID ");
+    //             Serial.println(it->first);
+    //             it->second.resend(this);
+    //             it->second.send_time = millis();
+    //         }
+    //     }
 }
 
 void TransportLayer::sendAck(uint8_t pid)
 {
-    uint8_t *payload = new uint8_t[sizeof(TransportLayerHeader)];
-    uint8_t *pointer = &payload[0];
+//     uint8_t *payload = new uint8_t[sizeof(TransportLayerHeader)];
+//     uint8_t *pointer = &payload[0];
 
-    TransportLayerHeader header(pid, TransportLayerHeader::Type::ACK);
-    header.encode(pointer);
+//     TransportLayerHeader header(pid, TransportLayerHeader::Type::ACK);
+//     header.encode(pointer);
 
-    Serial.print("[TRANSPORT]> Sending ACK for PID ");
-    Serial.println(pid);
+//     Serial.print("[TRANSPORT]> Sending ACK for PID ");
+//     Serial.println(pid);
 
-    downLayer->down(payload, sizeof(TransportLayerHeader));
+//     downLayer->down(payload, sizeof(TransportLayerHeader));
+// };
 };

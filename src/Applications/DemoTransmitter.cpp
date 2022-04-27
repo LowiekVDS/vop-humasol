@@ -24,7 +24,7 @@ bool DemoTransmitterApp::step()
     {
         this->timeSent = millis();
 
-        if (digitalRead(27))
+        if (digitalRead(26))
         {
             this->addEntry(new PumpOnEntry());
         }
