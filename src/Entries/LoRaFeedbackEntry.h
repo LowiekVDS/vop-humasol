@@ -13,7 +13,7 @@ public:
     float SNR;
 
 public:
-    LoRaFeedbackEntry(int RSSI, float SNR) : TLVEntry(LORA_FEEDBACK, sizeof(float) + sizeof(int)), RSSI(RSSI), SNR(SNR){};
+    LoRaFeedbackEntry(int RSSI=0, float SNR=0.0) : TLVEntry(LORA_FEEDBACK, sizeof(float) + sizeof(int)), RSSI(RSSI), SNR(SNR){};
     ~LoRaFeedbackEntry(){};
 
 public:
