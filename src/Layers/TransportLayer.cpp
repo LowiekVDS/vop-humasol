@@ -51,7 +51,10 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
 
     // Send to down layer
     Serial.print("[TRANSPORT]> Sending payload with PID ");
-    Serial.println(m_lastPID);
+    Serial.print(m_lastPID);
+    Serial.print(", and data (incl. 3-byte header): ");
+    printBuffer(new_payload, new_length);
+
 
     downLayer->down(new_payload, new_length);
 

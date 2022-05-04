@@ -31,28 +31,31 @@ void ControllerApp::up(uint8_t* payload, uint8_t length) {
             }
         }
         it = entries.erase(it);
-    }Serial.println("BUITEN");
+    }
 }
 
 bool ControllerApp::step() {
     LoRa.receive();
     // Serial.println("Step Controller");
-    if (this->m_newPumpState != this->m_pumpState){
-        if (m_newPumpState == PumpState::OPEN){
-            if (m_pumpState == PumpState::OPEN){
-                Serial.println("Still Pumping");
-            } else {
-                Serial.println("Started Pumping");
-            }
-        } else if (m_newPumpState == PumpState::CLOSED){
-            if (m_pumpState == PumpState::CLOSED){
-                Serial.println("Still not Pumping");
-            } else {
-                Serial.println("Stopped Pumping");
-            }
-        }
-        this->m_pumpState = this->m_newPumpState;
-        digitalWrite(GPIO_NUM_27, m_pumpState);
-    }
+
+    // if (this->m_newPumpState != this->m_pumpState){
+    //     if (m_newPumpState == PumpState::OPEN){
+    //         if (m_pumpState == PumpState::OPEN){
+    //             Serial.println("Still Pumping");
+    //         } else {
+    //             Serial.println("Started Pumping");
+    //         }
+    //     } else if (m_newPumpState == PumpState::CLOSED){
+    //         if (m_pumpState == PumpState::CLOSED){
+    //             Serial.println("Still not Pumping");
+    //         } else {
+    //             Serial.println("Stopped Pumping");
+    //         }
+    //     }
+    //     this->m_pumpState = this->m_newPumpState;
+    //     digitalWrite(GPIO_NUM_34, m_pumpState);
+    // }
+
+    digitalWrite(GPIO_NUM_32, !this->m_newPumpState);
     return true;
 }

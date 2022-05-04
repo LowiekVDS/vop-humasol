@@ -46,9 +46,6 @@ void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
     {
         LoRa.setTxPower(std::atoi((*jsonConfig)["txPower"]));
     }
-    {
-        LoRa.setSpreadingFactor(std::atoi((*jsonConfig)["LoRaSpreadFactor"]));
-    }
     if (jsonConfig->containsKey("bandwidth"))
     {
         LoRa.setSignalBandwidth(static_cast<int>(std::atof((*jsonConfig)["bandwidth"]) * 1000));

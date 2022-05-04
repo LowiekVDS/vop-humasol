@@ -1,17 +1,16 @@
 #include "DispatcherApp.h"
 #include "../Entries/Entries.h"
-#define SEND_INTERVAL 3000 // In ms
-
-#define PIN_PUMP_RELAY 26
+#include "LoRa.h"
 
 bool DispatcherApp::step()
 {
-    // Serial.println("Step");
-    if (millis() - m_lastSent > SEND_INTERVAL)
+    LoRa.receive();
+    if (millis() - m_lastSent > this->prm_send_interval)
     {
 
         m_lastSent = millis();
 
+        runLoRaFeedback();
         runPump();
         runBattery();
         this->flush();
@@ -19,17 +18,45 @@ bool DispatcherApp::step()
     return 0;
 }
 
-void DispatcherApp::runPump() {
-    int switch_value = digitalRead(PIN_PUMP_RELAY);
-    
-    TLVEntry* entry = new PumpStateEntry(switch_value?PUMP_CLOSE:PUMP_OPEN); // TODO: Actually read the state from the pump
+void DispatcherApp::loadConfig(JsonObject* config) {
+    if (config->containsKey("dispatcherSendInterval"))
+    {
+        this->prm_send_interval = std::atoi((*config)["dispatcherSendInterval"]);
+    }
+    if (config->containsKey("dispatcherPinPumpRelay"))
+    {
+        this->prm_pin_pump_relay = std::atoi((*config)["dispatcherPinPumpRelay"]);
+    }
+    if (config->containsKey("dispatcherInvert"))
+    {
+        this->prm_invert = (*config)["dispatcherInvert"] == "true";
+    }
+}
+
+void DispatcherApp::runLoRaFeedback() {
+    // Send LoRa SNR and other information in a message
+
+    int RSSI = LoRa.packetRssi();
+    float SNR = LoRa.packetSnr();
+
+    TLVEntry * entry = new LoRaFeedbackEntry(RSSI, SNR);
+    this->addEntry(entry);
+}
+
+void DispatcherApp::runPump()
+{
+    int switch_value = digitalRead(this->prm_pin_pump_relay);
+
+    if (this->prm_invert) {
+        switch_value = ! switch_value;
+    }
+
+    TLVEntry *entry = new PumpStateEntry(switch_value ? PUMP_CLOSE : PUMP_OPEN);
     this->addEntry(entry);
 }
 
 void DispatcherApp::runBattery()
 {
-    uint8_t bat_level = 23;
-
-    TLVEntry *entry = new BatteryLevelEntry(bat_level); // TODO: Actually read the level from the battery
-    this->addEntry(entry);
+ // TODO
+  return;
 }

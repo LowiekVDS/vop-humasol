@@ -32,6 +32,11 @@ TLVEntry *TLVEntry::CreateFromType(uint8_t type)
         PongEntry *pong = new PongEntry();
         return (TLVEntry *)pong;
     }
+    case LORA_FEEDBACK:
+    {
+        LoRaFeedbackEntry *pong = new LoRaFeedbackEntry();
+        return (TLVEntry *)pong;
+    }
     default:
     {
         Serial.println("*TLVEntry::CreateFromType > Received unvalid type");

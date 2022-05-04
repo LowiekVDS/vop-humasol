@@ -84,7 +84,10 @@ void setup()
   networkStack.addLayer(new TransportLayer());
   networkStack.addLayer(bufferLayers[2]);
 
-   networkStack.addLayer(pingPongApp);
+ // networkStack.addLayer(controllerApp);
+  networkStack.addLayer(dispatchApp);
+
+  // networkStack.addLayer(pingPongApp);
   // networkStack.addLayer(pongApp);
 
   // SPIFFS setup
@@ -119,9 +122,8 @@ void setup()
       request->send(200, "application/json", "{}"); });
   }
 
-  
-  // Go to sleep for a few seconds
-
+  pinMode(GPIO_NUM_32, OUTPUT);
+  pinMode(GPIO_NUM_26, INPUT_PULLDOWN);
 }
 
 void loop()
@@ -132,12 +134,11 @@ void loop()
   }
   
   if (!networkStack.step()) {
-    Serial.println("Going to deep sleep");
+   // Serial.println("Going to deep sleep");
     LoRa.receive();
     // rtc_gpio_pulldown_en(GPIO_NUM_33);
      // esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 0);
- esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 1);
-    esp_deep_sleep_start();
+
     
   } else {
   }

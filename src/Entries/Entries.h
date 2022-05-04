@@ -4,3 +4,4 @@
 #include "PumpStateEntry.h"
 #include "PingEntry.h"
 #include "PongEntry.h"
+#include "LoRaFeedbackEntry.h"
