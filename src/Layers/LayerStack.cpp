@@ -69,13 +69,18 @@ bool LayerStack::step()
     bool activity = this->steppingPointer->step();
 
     if (this->activity && !activity)
+        this->activity_counter = millis();
+    else if (activity)
         this->activity_counter = 0;
-    else if (!this->activity && !activity)
-        this->activity_counter++;
+    
+    // else if (!this->activity && !activity)
+    //     this->activity_counter++;
 
     this->activity = activity;
 
     this->steppingPointer = this->steppingPointer->getDownLayer();
 
-    return this->activity_counter <= this->no_activity_limit;
+    return this->activity_counter == 0 || (millis() - this->activity_counter < this->no_activity_limit);
+
+    // return this->activity_counter <= this->no_activity_limit;
 }
