@@ -16,7 +16,7 @@ void TransportLayer::up(uint8_t *payload, uint8_t length)
             Serial.print(' ');
         }
         Serial.printf("Length: %d", length);
-        Serial.printf("; Headersize: %d\n", sizeof(TransportLayerHeader));
+        Serial.printf("; Headersize: %d\n", header.size());
 
         upLayer->up(payload+header.size(), length - header.size());
         sendAck(header.pid);
@@ -64,8 +64,7 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
     header.encode(pointer);
 
     // Add payload
-    memcpy(pointer+header.size(), payload, length);
-    
+    memcpy(new_payload+header.size(), payload, length);
     
     // Send to down layer
     downLayer->down(new_payload, new_length);

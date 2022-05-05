@@ -20,7 +20,7 @@ class TransportLayer : public Layer
                 uint16_t pid;
                 Type type; // ACK = 0x01, NACK=0x10, NONE=0x00
                 TransportLayerHeader(uint8_t pid, Type type = Type::DATA):pid(pid),type(type){};
-                TransportLayerHeader(uint8_t*& buffer){ decode(buffer); };
+                TransportLayerHeader(uint8_t* buffer){ decode(buffer); };
             public:
                 inline int size() { return sizeof(pid) + sizeof(type); };
                 void decode(uint8_t* buffer){
