@@ -13,10 +13,10 @@ class DispatcherApp : public Application {
 
     public:
         uint16_t prm_send_interval;
-        uint16_t prm_pin_pump_relay;
+        uint16_t prm_pin_floatswitch;
         bool prm_invert;
 
-        DispatcherApp() : Application(), prm_send_interval(2000), prm_pin_pump_relay(26), prm_invert(false) {};
+        DispatcherApp() : Application(), prm_send_interval(2000), prm_pin_floatswitch(26), prm_invert(false) {};
         ~DispatcherApp() {};
 
     public:

@@ -1,6 +1,30 @@
 #include "ControllerApp.h"
 #include "Arduino.h"
 #include <LoRa.h>
+
+void ControllerApp::loadConfig(JsonObject* config) {
+    if (config->containsKey("controllerPinPump"))
+    {
+        this->prm_pin_pump = std::atoi((*config)["controllerPinPump"]);
+    }
+    if (config->containsKey("controllerSafetymodeInitTimeout"))
+    {
+        this->prm_safety_mode_init_timeout = std::atoi((*config)["controllerSafetymodeInitTimeout"]);
+    }
+    if (config->containsKey("controllerSafetymodePumpingPeriod"))
+    {
+        this->prm_safety_mode_pumping_period = std::atoi((*config)["controllerSafetymodePumpingPeriod"]);
+    }
+     if (config->containsKey("controllerSafetymodeRestingPeriod"))
+    {
+        this->prm_safety_mode_resting_period = std::atoi((*config)["controllerSafetymodeRestingPeriod"]);
+    }
+    if (config->containsKey("controllerInvert"))
+    {
+        this->prm_invert = (*config)["controllerInvert"] == "true";
+    }
+}
+
 void ControllerApp::up(uint8_t *payload, uint8_t length)
 {
     std::vector<TLVEntry *> entries = ApplicationLayer::extractEntries(payload, length);

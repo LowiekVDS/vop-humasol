@@ -15,6 +15,16 @@ inline void logInit()
 #endif
 }
 
+inline String convertToString(uint8_t* a, int size)
+{
+    int i;
+    String s = "";
+    for (i = 0; i < size; i++) {
+        s = s + a[i];
+    }
+    return s;
+}
+
 inline void printBuffer(uint8_t* payload, uint8_t length) {
     for (auto i = 0; i < length; i++)
     {

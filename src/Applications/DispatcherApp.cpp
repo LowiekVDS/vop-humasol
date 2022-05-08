@@ -23,9 +23,9 @@ void DispatcherApp::loadConfig(JsonObject* config) {
     {
         this->prm_send_interval = std::atoi((*config)["dispatcherSendInterval"]);
     }
-    if (config->containsKey("dispatcherPinPumpRelay"))
+    if (config->containsKey("dispatcherPinFloatswitch"))
     {
-        this->prm_pin_pump_relay = std::atoi((*config)["dispatcherPinPumpRelay"]);
+        this->prm_pin_floatswitch = std::atoi((*config)["dispatcherPinFloatswitch"]);
     }
     if (config->containsKey("dispatcherInvert"))
     {
@@ -45,7 +45,7 @@ void DispatcherApp::runLoRaFeedback() {
 
 void DispatcherApp::runPump()
 {
-    int switch_value = digitalRead(this->prm_pin_pump_relay);
+    int switch_value = digitalRead(this->prm_pin_floatswitch);
 
     if (this->prm_invert) {
         switch_value = ! switch_value;

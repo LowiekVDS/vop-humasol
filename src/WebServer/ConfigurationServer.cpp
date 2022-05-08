@@ -11,19 +11,19 @@
 
 void ConfigurationServer::init()
 {
-    assert(!this->initialized);
+  assert(!this->initialized);
 
-    WiFi.mode(WIFI_AP);
-    WiFi.softAP(WiFi.macAddress().c_str());
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP(WiFi.macAddress().c_str());
 
-    // Serve main application
-    this->server.serveStatic("/", SPIFFS, "/frontend/");
-    this->server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-              { request->send(SPIFFS, "/frontend/index.html", "text/html"); });
+  // Serve main application
+  this->server.serveStatic("/", SPIFFS, "/frontend/");
+  this->server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+                  { request->send(SPIFFS, "/frontend/index.html", "text/html"); });
 
-    // Serve the API
-    this->server.on("/api/config", HTTP_GET, [](AsyncWebServerRequest *request)
-              {
+  // Serve the API
+  this->server.on("/api/config", HTTP_GET, [](AsyncWebServerRequest *request)
+                  {
     // Send back the current configuration of the ESP32, which is basically the one saved to SPIFFS
     if(SPIFFS.exists("/config/config.json")) {
       request->send(SPIFFS, "/config/config.json", "application/json");
@@ -31,8 +31,8 @@ void ConfigurationServer::init()
       request->send(SPIFFS, "/config/default.json", "application/json");
     } });
 
-    this->server.on("/api/status", HTTP_GET, [](AsyncWebServerRequest *request)
-              {
+  this->server.on("/api/status", HTTP_GET, [](AsyncWebServerRequest *request)
+                  {
     // Send back the LoRa status
     DynamicJsonBuffer jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
@@ -45,14 +45,14 @@ void ConfigurationServer::init()
 
     request->send(200, "application/json", result.c_str()); });
 
-    // Required for CORS
-    this->server.on("/api/config", HTTP_OPTIONS, [](AsyncWebServerRequest *request)
-              { request->send(200, "text/plain", ""); });
+  // Required for CORS
+  this->server.on("/api/config", HTTP_OPTIONS, [](AsyncWebServerRequest *request)
+                  { request->send(200, "text/plain", ""); });
 
-    dnsServer.start(53, "*", WiFi.softAPIP());
-    this->server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
+  dnsServer.start(53, "*", WiFi.softAPIP());
+  this->server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
 
-    this->server.begin();
+  this->server.begin();
 
-    this->initialized = true;
+  this->initialized = true;
 }

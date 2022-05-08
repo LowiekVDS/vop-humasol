@@ -5,3 +5,5 @@
 #include "PingEntry.h"
 #include "PongEntry.h"
 #include "LoRaFeedbackEntry.h"
+#include "LoRaConfigEntry.h"
+#include "ConfigEntry.h"

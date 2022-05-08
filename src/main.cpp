@@ -26,6 +26,7 @@ BufferLayer *bufferLayers[nrOfBufferLayers];
 PingPongApp *pingPongApp = new PingPongApp();
 DispatcherApp *dispatchApp = new DispatcherApp();
 ControllerApp *controllerApp = new ControllerApp();
+ConfigApp *configApp = new ConfigApp();
 PongApp *pongApp = new PongApp();
 
 // ----- WebServer -----
@@ -37,7 +38,15 @@ JsonObject *configuration;
 void loadConfig()
 {
 
-  Serial.println("Loading configuration...");
+  if (DEBUG)
+  {
+    Serial.println("Loading configuration...");
+  }
+
+  if (!SPIFFS.exists("/config/config.json"))
+  {
+    resetToDefaultConfig();
+  }
 
   File configFile = SPIFFS.open("/config/config.json", "r");
   String config = configFile.readString();
@@ -59,12 +68,32 @@ void loadConfig()
   networkStack.loadConfig(&root);
 }
 
+void resetToDefaultConfig()
+{
+  File defaultConfig = SPIFFS.open("/config/default.json");
+  File config = SPIFFS.open("/config/config.json", "w");
+
+  char *defaultConfigBuffer;
+
+  defaultConfig.readBytes(defaultConfigBuffer, defaultConfig.size());
+  config.write((uint8_t *)defaultConfigBuffer, defaultConfig.size());
+  defaultConfig.close();
+  config.close();
+}
+
 void setup()
 {
   // Communication
   if (DEBUG == 1)
   {
     Serial.begin(115200);
+  }
+
+  // SPIFFS setup
+  if (!SPIFFS.begin())
+  {
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    throw "An Error has occurred while mounting SPIFFS";
   }
 
   // Init the physicalLayer
@@ -76,6 +105,11 @@ void setup()
     bufferLayers[i] = new BufferLayer(i);
   }
 
+  // Load configuration
+  loadConfig();
+
+  // Based on configuration, setup network stack and reload config
+
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
   networkStack.addLayer(bufferLayers[0]);
@@ -84,30 +118,35 @@ void setup()
   networkStack.addLayer(new TransportLayer());
   networkStack.addLayer(bufferLayers[2]);
 
- // networkStack.addLayer(controllerApp);
-  networkStack.addLayer(dispatchApp);
-
-  // networkStack.addLayer(pingPongApp);
-  // networkStack.addLayer(pongApp);
-
-  // SPIFFS setup
-  if (!SPIFFS.begin())
+  if (configuration->containsKey("type"))
   {
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    throw "An Error has occurred while mounting SPIFFS";
+    if ((*configuration)["type"] == "controller")
+    {
+      networkStack.addLayer(controllerApp);
+    }
+    else if ((*configuration)["type"] == "dispatcher")
+    {
+      networkStack.addLayer(dispatchApp);
+    }
+    else
+    {
+      networkStack.addLayer(configApp);
+    }
+  }
+  else
+  {
+    networkStack.addLayer(configApp);
   }
 
-  // Application setup
-  // applications.insert(std::make_pair("PingPong", pingPongApp));
-
-  // Load configuration
+  // Reload config as networkstack has changed
   loadConfig();
 
-  // WiFi setup
-  // TODO replace with digitalRead or something similar
-  const bool enableWebserver = false;
-  if (enableWebserver)
+  // WiFi and config setup
+  pinMode(GPIO_NUM_34, INPUT_PULLUP);
+  if (!digitalRead(GPIO_NUM_34))
   {
+    // Enable webserver
+
     configServer->init();
     configServer->server.on(
         "/api/config", HTTP_PATCH, [](AsyncWebServerRequest *request) {},
@@ -120,6 +159,11 @@ void setup()
       loadConfig();
       
       request->send(200, "application/json", "{}"); });
+
+    // Reset to default config?
+    resetToDefaultConfig();
+
+    loadConfig();
   }
 
   pinMode(GPIO_NUM_32, OUTPUT);
@@ -128,19 +172,26 @@ void setup()
 
 void loop()
 {
+
+  if (!digitalRead(GPIO_NUM_34))
+  {
+    ESP.restart();
+  }
+
   if (configServer->isInitialized())
   {
     configServer->dnsServer.processNextRequest();
   }
-  
-  if (!networkStack.step()) {
-   // Serial.println("Going to deep sleep");
+
+  if (!networkStack.step())
+  {
+    // Serial.println("Going to deep sleep");
     LoRa.receive();
     // rtc_gpio_pulldown_en(GPIO_NUM_33);
-     // esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 0);
-
-    
-  } else {
+    // esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 0);
+  }
+  else
+  {
   }
 
   delay(10);

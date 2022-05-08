@@ -28,6 +28,7 @@ public:
     ~Layer() {}
 
 public:
+
     /**
      * @brief Processes an incoming packet and pushes the result to the layer above
      *

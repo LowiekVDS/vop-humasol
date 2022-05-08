@@ -62,17 +62,6 @@ void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
     {
         LoRa.disableCrc();
     }
-    if (jsonConfig->containsKey("type"))
-    {
-        if ((*jsonConfig)["type"] == "Receiver")
-        {
-            LoRa.receive();
-        }
-        else
-        {
-            LoRa.sleep();
-        }
-    }
 }
 
 void PhysicalLayer::up(uint8_t *payload, uint8_t length)
