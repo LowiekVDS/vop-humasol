@@ -6,7 +6,8 @@
 bool DispatcherApp::step()
 {
     LoRa.receive();
-    if (millis() - m_lastSent > this->prm_send_interval)
+    if (this->currentValue!=digitalRead(this->prm_pin_floatswitch) ||
+        millis() - m_lastSent > this->prm_send_interval)
     {
 
         m_lastSent = millis();
@@ -128,7 +129,7 @@ void DispatcherApp::runPump()
     {
         switch_value = !switch_value;
     }
-
+    this->currentValue = switch_value;
     TLVEntry *entry = new PumpStateEntry(switch_value ? PUMP_CLOSE : PUMP_OPEN);
     this->addEntry(entry);
 }

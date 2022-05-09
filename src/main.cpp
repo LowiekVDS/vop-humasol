@@ -258,10 +258,12 @@ void loop()
 
   if (!networkStack.step())
   {
-    // Serial.println("Going to deep sleep");
+    Serial.println("Going to deep sleep");
     LoRa.receive();
-    // rtc_gpio_pulldown_en(GPIO_NUM_33);
-    // esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 0);
+    
+    esp_sleep_enable_ext0_wakeup((gpio_num_t)dispatchApp->prm_pin_floatswitch, dispatchApp->currentValue==HIGH?LOW:HIGH);
+    esp_sleep_enable_timer_wakeup(dispatchApp->prm_send_interval*1000*.8);
+    esp_deep_sleep_start();
   }
   else
   {

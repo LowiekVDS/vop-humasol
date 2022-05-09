@@ -12,11 +12,12 @@ class DispatcherApp : public Application {
         unsigned long m_lastSent;
 
     public:
+        uint8_t currentValue;
         uint16_t prm_send_interval;
         uint16_t prm_pin_floatswitch;
         bool prm_invert;
 
-        DispatcherApp() : Application(), prm_send_interval(2000), prm_pin_floatswitch(26), prm_invert(false) {};
+        DispatcherApp() : Application(), currentValue(0), prm_send_interval(2000), prm_pin_floatswitch(26), prm_invert(false) {};
         ~DispatcherApp() {};
 
     public:
