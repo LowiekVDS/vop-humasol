@@ -35,6 +35,39 @@ ConfigurationServer *configServer = &ConfigurationServer::GetInstance();
 // ----- Global State -----
 JsonObject *configuration;
 
+bool configMode = false;
+
+void resetToDefaultConfig()
+{
+
+  if (DEBUG)
+  {
+    Serial.println("Resetting to default config...");
+  }
+
+  File defaultConfig = SPIFFS.open("/config/default.json");
+  String configstring = defaultConfig.readString();
+  File config = SPIFFS.open("/config/config.json", "w");
+
+  char *defaultConfigBuffer;
+
+  defaultConfig.readBytes(defaultConfigBuffer, defaultConfig.size());
+
+  if (DEBUG)
+  {
+    Serial.println(configstring);
+    Serial.println(defaultConfig.size());
+  }
+
+  Serial.println("wtf6");
+
+  config.print(configstring);
+
+  Serial.println("wtf7");
+  defaultConfig.close();
+  config.close();
+}
+
 void loadConfig()
 {
 
@@ -68,19 +101,6 @@ void loadConfig()
   networkStack.loadConfig(&root);
 }
 
-void resetToDefaultConfig()
-{
-  File defaultConfig = SPIFFS.open("/config/default.json");
-  File config = SPIFFS.open("/config/config.json", "w");
-
-  char *defaultConfigBuffer;
-
-  defaultConfig.readBytes(defaultConfigBuffer, defaultConfig.size());
-  config.write((uint8_t *)defaultConfigBuffer, defaultConfig.size());
-  defaultConfig.close();
-  config.close();
-}
-
 void setup()
 {
   // Communication
@@ -96,19 +116,23 @@ void setup()
     throw "An Error has occurred while mounting SPIFFS";
   }
 
+  pinMode(GPIO_NUM_12, INPUT_PULLUP);
+  Serial.println(digitalRead(GPIO_NUM_12));
+  if (!digitalRead(GPIO_NUM_12))
+  {
+    // resetToDefaultConfig();
+  }
+
+  Serial.println("wtf8");
   // Init the physicalLayer
   physicalLayer->init(433E6);
-
+  Serial.println("wtf9");
   // Init the buffer layers
   for (uint8_t i = 0; i < nrOfBufferLayers; i++)
   {
     bufferLayers[i] = new BufferLayer(i);
   }
-
-  // Load configuration
-  loadConfig();
-
-  // Based on configuration, setup network stack and reload config
+  Serial.println("wtf10");
 
   // Setup NetworkStack
   networkStack.addLayer(&PhysicalLayer::GetInstance());
@@ -118,13 +142,17 @@ void setup()
   networkStack.addLayer(new TransportLayer());
   networkStack.addLayer(bufferLayers[2]);
 
+  Serial.println("wtf11");
+
+  loadConfig();
+
   if (configuration->containsKey("type"))
   {
-    if ((*configuration)["type"] == "controller")
+    if ((*configuration)["type"] == "contr")
     {
       networkStack.addLayer(controllerApp);
     }
-    else if ((*configuration)["type"] == "dispatcher")
+    else if ((*configuration)["type"] == "dispa")
     {
       networkStack.addLayer(dispatchApp);
     }
@@ -138,33 +166,73 @@ void setup()
     networkStack.addLayer(configApp);
   }
 
+  Serial.println("wtf12");
   // Reload config as networkstack has changed
   loadConfig();
 
   // WiFi and config setup
-  pinMode(GPIO_NUM_34, INPUT_PULLUP);
-  if (!digitalRead(GPIO_NUM_34))
+  if (!digitalRead(GPIO_NUM_12))
   {
     // Enable webserver
 
-    configServer->init();
+    Serial.println("wtf1");
+
     configServer->server.on(
         "/api/config", HTTP_PATCH, [](AsyncWebServerRequest *request) {},
         NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
         {
+      
+      Serial.println("TEST");
       File configFile = SPIFFS.open("/config/config.json", "w");
       configFile.write(data, len);
+            Serial.println("TEST1");
+
       configFile.close();
-      
-      loadConfig();
-      
+            Serial.println("TEST1.5");
+
+            // Now replace the top layer of the networkstack
+
+            networkStack.removeLayer();
+            networkStack.addLayer(configApp);
+
+      configApp->sendConfig();
+            Serial.println("TEST2");
+
       request->send(200, "application/json", "{}"); });
+    Serial.println("wtf2");
+
+    configServer->server.on(
+        "/api/config/status", HTTP_GET, [](AsyncWebServerRequest *request)
+        {
+
+            DynamicJsonBuffer jsonBuffer;
+    JsonObject &root = jsonBuffer.createObject();
+    root["configStatus"] = String(configApp->state);
+
+    String result;
+    root.printTo(result);
+
+      
+      request->send(200, "application/json", result.c_str()); });
+
+    Serial.println("wtf3");
+
+    configServer->init();
+    Serial.println("wtf4");
 
     // Reset to default config?
-    resetToDefaultConfig();
+    // resetToDefaultConfig();
 
     loadConfig();
+
+    configMode = true;
   }
+
+  configServer->server.on(
+      "/api/reset", HTTP_GET, [](AsyncWebServerRequest *request)
+      {
+        resetToDefaultConfig();
+        ESP.restart(); });
 
   pinMode(GPIO_NUM_32, OUTPUT);
   pinMode(GPIO_NUM_26, INPUT_PULLDOWN);
@@ -173,9 +241,14 @@ void setup()
 void loop()
 {
 
-  if (!digitalRead(GPIO_NUM_34))
+  if (!digitalRead(GPIO_NUM_12) && !configMode)
   {
     ESP.restart();
+  }
+
+  if (digitalRead(GPIO_NUM_12) && configMode)
+  {
+    configMode = false;
   }
 
   if (configServer->isInitialized())
@@ -192,6 +265,7 @@ void loop()
   }
   else
   {
+    LoRa.receive();
   }
 
   delay(10);

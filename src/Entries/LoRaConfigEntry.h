@@ -17,7 +17,7 @@ public:
 
 public:
     LoRaConfigEntry(uint8_t txPower = 15, uint8_t LoRaSpreadFactor = 11, long bandwidth = 125, bool crc = false, uint8_t codingRate = 5)
-        : TLVEntry(LORA_CONFIG, 3 * sizeof(uint8_t) + sizeof(long) + sizeof(bool)), txPower(txPower), LoRaSpreadFactor(LoRaSpreadFactor), bandwidth(bandwidth), crc(crc), codingRate(codingRate){};
+        : TLVEntry(LORA_CONFIG, 4 * sizeof(uint8_t) + sizeof(bool)), txPower(txPower), LoRaSpreadFactor(LoRaSpreadFactor), bandwidth(bandwidth), crc(crc), codingRate(codingRate){};
     ~LoRaConfigEntry(){};
 
 public:

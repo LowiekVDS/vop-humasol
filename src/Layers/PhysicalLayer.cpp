@@ -48,7 +48,7 @@ void PhysicalLayer::loadConfig(JsonObject *jsonConfig)
     }
     if (jsonConfig->containsKey("bandwidth"))
     {
-        LoRa.setSignalBandwidth(static_cast<int>(std::atof((*jsonConfig)["bandwidth"]) * 1000));
+        LoRa.setSignalBandwidth(static_cast<int>(std::atof((*jsonConfig)["bandwidth"])));
     }
     if (jsonConfig->containsKey("codingRate"))
     {

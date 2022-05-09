@@ -23,7 +23,7 @@ class DispatcherApp : public Application {
 
         void loadConfig(JsonObject *jsonConfig) override ;
 
-        void up(uint8_t* payload, uint8_t length) override {};
+        void up(uint8_t* payload, uint8_t length) override ;
     public:
         bool step() override;
     public:

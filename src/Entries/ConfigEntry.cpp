@@ -1,7 +1,7 @@
 #include "ConfigEntry.h"
 #include "ArduinoJson.h"
 
-ConfigEntry::ConfigEntry(uint8_t *typePtr = nullptr, uint8_t *passwordPtr = nullptr) : TLVEntry(CONFIG, (5 + 16) * sizeof(uint8_t))
+ConfigEntry::ConfigEntry(uint8_t *typePtr, uint8_t *passwordPtr) : TLVEntry(CONFIG, (5 + 16) * sizeof(uint8_t))
 {
     if (typePtr)
     {
@@ -33,14 +33,17 @@ void ConfigEntry::decode(uint8_t *&pointer)
 {
     TLVEntry::decode(pointer);
 
+    printBuffer(pointer, 21);
+
     for (uint8_t i = 0; i < 5; i++)
     {
-        type[i];
+        Serial.println(*pointer, HEX);
+        type[i] = *pointer;
         pointer++;
     }
     for (uint8_t i = 0; i < 16; i++)
     {
-        *pointer = password[i];
+        password[i] = *pointer;
         pointer++;
     }
 }

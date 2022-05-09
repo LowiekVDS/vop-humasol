@@ -6,18 +6,28 @@
  * It occasionally sends a message, waits for an ACK and goes back to sleep.
  */
 
+enum ConfigStates
+{
+    CFG_IDLE=0,
+    CFG_SENT_CONFIG=1,
+    CFG_RECEIVED_CONFIG=2,
+    CFG_RECEIVED_PONG=3,
+    CFG_SENT_PING=4,
+};
+
 class ConfigApp : public Application
 {
 
 public:
-    ConfigApp() : Application(){};
+    ConfigApp() : Application(), state(ConfigStates::CFG_IDLE){};
     ~ConfigApp(){};
 
-public:
-    void up(uint8_t *payload, uint8_t length) override{};
+    ConfigStates state;
 
 public:
     void up(uint8_t *payload, uint8_t length) override;
+
+    void sendConfig();
 
     bool step() override;
 };

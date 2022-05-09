@@ -13,8 +13,21 @@ void ConfigurationServer::init()
 {
   assert(!this->initialized);
 
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP(WiFi.macAddress().c_str());
+  const char *ssid = "FAEL-2.4GHz";
+  const char *password = "Woody1905";
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
+  }
+
+  Serial.println(WiFi.localIP().toString());
+
+  // WiFi.mode(WIFI_AP);
+  // WiFi.softAP(WiFi.macAddress().c_str());
 
   // Serve main application
   this->server.serveStatic("/", SPIFFS, "/frontend/");
@@ -38,12 +51,14 @@ void ConfigurationServer::init()
     JsonObject &root = jsonBuffer.createObject();
     root["SNR"] = LoRa.packetSnr();
     root["RSSI"] = LoRa.packetRssi();
-    root["time"] = millis();
 
     String result;
     root.prettyPrintTo(result);
 
     request->send(200, "application/json", result.c_str()); });
+
+  this->server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
+                  { ESP.restart(); });
 
   // Required for CORS
   this->server.on("/api/config", HTTP_OPTIONS, [](AsyncWebServerRequest *request)

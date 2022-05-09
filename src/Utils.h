@@ -20,7 +20,7 @@ inline String convertToString(uint8_t* a, int size)
     int i;
     String s = "";
     for (i = 0; i < size; i++) {
-        s = s + a[i];
+        s = s + (char) a[i];
     }
     return s;
 }
