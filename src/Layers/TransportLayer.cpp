@@ -64,6 +64,7 @@ void TransportLayer::down(uint8_t *payload, uint8_t length)
 
 bool TransportLayer::step()
 {
+ 
     if (millis() - m_lastTimeoutCheck > TIMEOUT_CHECK_INTERVAL)
     {
         for (auto it = m_sentpackets.begin(); it != m_sentpackets.end(); ++it)
@@ -81,8 +82,8 @@ bool TransportLayer::step()
                 }
                 else
                 {
-                    Serial.print("[TRANSPORT]> Resending packet with PID ");
-                    Serial.println(it->first);
+                   // Serial.print("[TRANSPORT]> Resending packet with PID ");
+                    //Serial.println(it->first);
 
                     it->second.nr_of_resends++;
                     this->downLayer->down(it->second.transport_data, it->second.transport_data_size);

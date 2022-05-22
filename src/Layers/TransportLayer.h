@@ -3,9 +3,9 @@
 #include "TimeoutPacket.h"
 #include <map>
 // #include <vector>
-#define TIMEOUT_LENGTH 10000    // in ms; 30 s
-#define TIMEOUT_CHECK_INTERVAL 5000 // in ms; 5 s
-#define MAX_RETRANSMISSIONS 3
+#define TIMEOUT_LENGTH 5000    // in ms; 30 s
+#define TIMEOUT_CHECK_INTERVAL 500 // in ms; 5 s
+#define MAX_RETRANSMISSIONS 5
 
 class TransportLayer : public Layer
 {
@@ -19,6 +19,7 @@ public:
             ACK = 0x01,
         };
 
+        uint16_t max_pid;
         uint16_t pid;
         Type type;
         TransportLayerHeader(uint8_t pid, Type type = Type::DATA) : pid(pid), type(type){};

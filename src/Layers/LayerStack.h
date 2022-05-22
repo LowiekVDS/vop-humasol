@@ -17,7 +17,7 @@ class LayerStack {
         bool activity;
         Layer* steppingPointer;
     public:
-        LayerStack(): m_stackSize(0), no_activity_limit(10000), activity_counter(0), activity(false), steppingPointer(nullptr) {};
+        LayerStack(): m_stackSize(0), no_activity_limit(1000), activity_counter(0), activity(false), steppingPointer(nullptr) {};
 
         /**
          * @brief Adds a new layer on top of the stack and connects it correctly to the existing stack

@@ -120,6 +120,7 @@ void setup()
   Serial.println(digitalRead(GPIO_NUM_12));
   if (!digitalRead(GPIO_NUM_12))
   {
+    configMode = true;
     // resetToDefaultConfig();
   }
 
@@ -170,8 +171,22 @@ void setup()
   // Reload config as networkstack has changed
   loadConfig();
 
+  if (configMode)
+  {
+    ledcSetup(0, 0, 8);
+    ledcAttachPin(4, 0);
+    ledcWrite(0, 128);
+  }
+  else
+  {
+
+    ledcSetup(0, 5000, 8);
+    ledcAttachPin(4, 0);
+    ledcWrite(0, 255);
+  }
+
   // WiFi and config setup
-  if (!digitalRead(GPIO_NUM_12))
+  if (configMode)
   {
     // Enable webserver
 
@@ -224,8 +239,6 @@ void setup()
     // resetToDefaultConfig();
 
     loadConfig();
-
-    configMode = true;
   }
 
   configServer->server.on(
@@ -235,7 +248,7 @@ void setup()
         ESP.restart(); });
 
   pinMode(GPIO_NUM_32, OUTPUT);
-  pinMode(GPIO_NUM_26, INPUT_PULLDOWN);
+  pinMode(GPIO_NUM_26, INPUT);
 }
 
 void loop()
@@ -249,6 +262,9 @@ void loop()
   if (digitalRead(GPIO_NUM_12) && configMode)
   {
     configMode = false;
+    ledcSetup(0, 5000, 8);
+    ledcAttachPin(4, 0);
+    ledcWrite(0, 255);
   }
 
   if (configServer->isInitialized())
@@ -256,12 +272,18 @@ void loop()
     configServer->dnsServer.processNextRequest();
   }
 
-  if (!networkStack.step())
+  if (!networkStack.step() && !configMode)
   {
-    // Serial.println("Going to deep sleep");
-    LoRa.receive();
-    // rtc_gpio_pulldown_en(GPIO_NUM_33);
-    // esp_sleep_enable_ext0_wakeup(GPIO_NUM_33, 0);
+    Serial.println("Going to deep sleep");
+
+    LoRa.sleep();
+    pinMode(14, INPUT);
+    LoRa.end();
+
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, 0);
+    esp_sleep_enable_ext0_wakeup((gpio_num_t)dispatchApp->prm_pin_floatswitch, !((bool)digitalRead(dispatchApp->prm_pin_floatswitch)));
+    esp_sleep_enable_timer_wakeup(dispatchApp->prm_send_interval * 10 * 1000 * .8);
+    esp_deep_sleep_start();
   }
   else
   {

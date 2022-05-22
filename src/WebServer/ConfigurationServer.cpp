@@ -13,21 +13,21 @@ void ConfigurationServer::init()
 {
   assert(!this->initialized);
 
-  const char *ssid = "FAEL-2.4GHz";
-  const char *password = "Woody1905";
+  // const char *ssid = "FAEL-2.4GHz";
+  // const char *password = "Woody1905";
 
-  WiFi.begin(ssid, password);
+  // WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(1000);
-    Serial.println("Connecting to WiFi..");
-  }
+  // while (WiFi.status() != WL_CONNECTED)
+  // {
+  //   delay(1000);
+  //   Serial.println("Connecting to WiFi..");
+  // }
 
-  Serial.println(WiFi.localIP().toString());
+  // Serial.println(WiFi.localIP().toString());
 
-  // WiFi.mode(WIFI_AP);
-  // WiFi.softAP(WiFi.macAddress().c_str());
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP(WiFi.macAddress().c_str());
 
   // Serve main application
   this->server.serveStatic("/", SPIFFS, "/frontend/");
@@ -65,7 +65,7 @@ void ConfigurationServer::init()
                   { request->send(200, "text/plain", ""); });
 
   dnsServer.start(53, "*", WiFi.softAPIP());
-  this->server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
+ // this->server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
 
   this->server.begin();
 

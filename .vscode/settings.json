@@ -45,7 +45,8 @@
         "typeinfo": "cpp",
         "bitset": "cpp",
         "regex": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "map": "cpp"
     },
     "terminal.integrated.gpuAcceleration": "off"
 }

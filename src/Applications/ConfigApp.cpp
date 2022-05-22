@@ -93,21 +93,20 @@ void ConfigApp::up(uint8_t *payload, uint8_t length)
 void ConfigApp::sendConfig()
 {
 
-    if (this->state == ConfigStates::CFG_IDLE)
+    if (this->state == ConfigStates::CFG_IDLE || this->state == ConfigStates::CFG_SENT_PING)
     {
         Serial.println("A1");
         PingEntry *ping = new PingEntry();
         this->addEntry(ping);
-                Serial.println("A2");
+        Serial.println("A2");
 
         this->flush();
-                Serial.println("A3");
+        Serial.println("A3");
 
         Serial.println("A4");
 
         this->state = ConfigStates::CFG_SENT_PING;
-                Serial.println("A5");
-
+        Serial.println("A5");
     }
 }
 
@@ -128,11 +127,11 @@ bool ConfigApp::step()
         String config = configFile.readString();
         configFile.close();
 
-    Serial.println("B1");
+        Serial.println("B1");
 
         DynamicJsonBuffer jsonBuffer;
         JsonObject &root = jsonBuffer.parseObject((const char *)config.c_str());
-Serial.println("B2");
+        Serial.println("B2");
         // Send LoRa Config and normal config
         LoRaConfigEntry *loraConfig = new LoRaConfigEntry(
             std::atoi(root["txPower"]),
@@ -140,32 +139,33 @@ Serial.println("B2");
             std::atoi(root["bandwidth"]),
             root["crc"] == "true",
             std::atoi(root["codingRate"]));
-Serial.println("B3");
+        Serial.println("B3");
         uint8_t type[5] = {0};
         uint8_t password[16] = {0};
 
         char firstThing = root["type"].asString()[0];
 
-        switch(firstThing) {
-            case 'c':
+        switch (firstThing)
+        {
+        case 'c':
             memcpy(type, "dispa", 5);
             break;
-            case 'd':
+        case 'd':
             memcpy(type, "contr", 5);
             break;
         }
 
-Serial.println("B4");
+        Serial.println("B4");
         memcpy(password, root["password"].asString(), 16);
-Serial.println("B5");
+        Serial.println("B5");
         ConfigEntry *normalConfig = new ConfigEntry(type, password);
-Serial.println("B6");
+        Serial.println("B6");
         // delete[] type;
         // delete[] password;
-Serial.println("B7");
+        Serial.println("B7");
         this->addEntry(loraConfig);
         this->addEntry(normalConfig);
-Serial.println("B8");
+        Serial.println("B8");
         this->flush();
         this->state = ConfigStates::CFG_SENT_CONFIG;
         break;

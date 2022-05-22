@@ -6,7 +6,7 @@
 bool DispatcherApp::step()
 {
     LoRa.receive();
-    if (millis() - m_lastSent > this->prm_send_interval)
+    if (millis() - m_lastSent > 500000) // this->prm_send_interval)
     {
 
         m_lastSent = millis();
@@ -14,9 +14,11 @@ bool DispatcherApp::step()
         runLoRaFeedback();
         runPump();
         runBattery();
+        
         this->flush();
+        return true;
     }
-    return 1;
+    return false;
 }
 
 void DispatcherApp::up(uint8_t *payload, uint8_t length)
@@ -33,7 +35,8 @@ void DispatcherApp::up(uint8_t *payload, uint8_t length)
 
             this->addEntry(pong);
             this->flush();
-        } else if (entry->type == LORA_CONFIG)
+        }
+        else if (entry->type == LORA_CONFIG)
         {
 
             LoRaConfigEntry *configEntry = (LoRaConfigEntry *)entry;
@@ -123,6 +126,8 @@ void DispatcherApp::runLoRaFeedback()
 void DispatcherApp::runPump()
 {
     int switch_value = digitalRead(this->prm_pin_floatswitch);
+
+    Serial.println(switch_value);
 
     if (this->prm_invert)
     {

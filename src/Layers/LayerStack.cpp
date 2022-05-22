@@ -63,6 +63,7 @@ bool LayerStack::step()
      */
     if (!this->steppingPointer)
     {
+        // Serial.println("START");
         this->steppingPointer = this->m_topLayer;
     }
 
@@ -80,7 +81,12 @@ bool LayerStack::step()
 
     this->steppingPointer = this->steppingPointer->getDownLayer();
 
+
+    // Serial.println(this->activity_counter);
+
     return this->activity_counter == 0 || (millis() - this->activity_counter < this->no_activity_limit);
 
     // return this->activity_counter <= this->no_activity_limit;
+
+
 }
