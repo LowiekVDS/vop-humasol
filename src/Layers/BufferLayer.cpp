@@ -7,7 +7,7 @@ void BufferLayer::up(uint8_t *payload, uint8_t length)
 
     if (this->upBuffer.size() >= MAX_BUFFER_SIZE)
     {
-        this->log("UP-BUFFER OVERFLOW", ERROR);
+        this->log("UP-BUFFER OVERFLOW",ERROR);
     }
     else
     {
@@ -34,7 +34,7 @@ void BufferLayer::down(uint8_t *payload, uint8_t length)
 
     if (this->downBuffer.size() >= MAX_BUFFER_SIZE)
     {
-        this->log("DOWN-BUFFER OVERFLOW", ERROR);
+        this->log("DOWN-BUFFER OVERFLOW",ERROR);
     }
     else
     {

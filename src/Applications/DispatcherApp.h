@@ -16,7 +16,9 @@ class DispatcherApp : public Application {
         uint16_t prm_pin_floatswitch;
         bool prm_invert;
 
-        DispatcherApp() : Application(), prm_send_interval(4000), prm_pin_floatswitch(26), prm_invert(false) {};
+        bool configuring;
+
+        DispatcherApp() : Application(), prm_send_interval(4000), prm_pin_floatswitch(26), prm_invert(false), configuring(false) {};
         ~DispatcherApp() {};
 
     public:

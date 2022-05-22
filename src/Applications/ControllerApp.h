@@ -18,12 +18,13 @@ public:
     bool prm_invert;
 
     bool safety_mode;
+    bool configuring;
 
     PumpState m_pumpState;
     PumpState m_newPumpState;
 
 public:
-    ControllerApp() : Application(), prm_pin_pump(GPIO_NUM_32), prm_safety_mode_init_timeout(60000), prm_safety_mode_pumping_period(60000), prm_safety_mode_resting_period(60 * 60000){};
+    ControllerApp() : Application(), prm_pin_pump(GPIO_NUM_32), prm_safety_mode_init_timeout(60000), prm_safety_mode_pumping_period(60000), prm_safety_mode_resting_period(60 * 60000), configuring(false){};
     ~ControllerApp(){};
 
 public:

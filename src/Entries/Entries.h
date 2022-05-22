@@ -7,3 +7,4 @@
 #include "LoRaFeedbackEntry.h"
 #include "LoRaConfigEntry.h"
 #include "ConfigEntry.h"
+#include "ErrorEntry.h"

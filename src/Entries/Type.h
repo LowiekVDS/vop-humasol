@@ -9,7 +9,8 @@
 #define LORA_FEEDBACK 0b0110 
 #define LORA_CONFIG 0b0111
 #define CONFIG 0b1000
+#define TRANSPORTLAYER_E 9
 
 inline bool isType(uint8_t type) {
-    return (type>=BATTERY_LEVEL) && (type <= CONFIG);
+    return (type>=BATTERY_LEVEL) && (type <=TRANSPORTLAYER_E);
 };

@@ -147,9 +147,17 @@ void setup()
 
   loadConfig();
 
-  if (configuration->containsKey("type"))
+  if (configuration->containsKey("type") && !configMode)
   {
-    if ((*configuration)["type"] == "contr")
+
+    if (configuration->containsKey("postConfig") && (*configuration)["postConfig"] == "true" ) {
+      Serial.println("YEEEESSS");
+
+      networkStack.addLayer(configApp);
+      configApp->state = CFG_POSTCONFIG;
+
+
+    } else if ((*configuration)["type"] == "contr")
     {
       networkStack.addLayer(controllerApp);
     }
@@ -265,6 +273,7 @@ void loop()
     ledcSetup(0, 5000, 8);
     ledcAttachPin(4, 0);
     ledcWrite(0, 255);
+    ESP.restart();
   }
 
   if (configServer->isInitialized())
@@ -272,18 +281,44 @@ void loop()
     configServer->dnsServer.processNextRequest();
   }
 
-  if (!networkStack.step() && !configMode)
+  if (!networkStack.step())
   {
-    Serial.println("Going to deep sleep");
 
-    LoRa.sleep();
-    pinMode(14, INPUT);
-    LoRa.end();
+    Serial.println("Tis van da");
+    Serial.println(configMode);
 
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, 0);
-    esp_sleep_enable_ext0_wakeup((gpio_num_t)dispatchApp->prm_pin_floatswitch, !((bool)digitalRead(dispatchApp->prm_pin_floatswitch)));
-    esp_sleep_enable_timer_wakeup(dispatchApp->prm_send_interval * 10 * 1000 * .8);
-    esp_deep_sleep_start();
+    if (((TopTerminalLayer *)networkStack.getTopLayer())->action == TLA_RESTART)
+    {
+      ESP.restart();
+    }
+
+    if (configMode)
+    {
+
+      if (configApp->state == CFG_SENT_CONFIG)
+      {
+        // Reload the configuration
+        Serial.println("C1");
+        loadConfig();
+        Serial.println("C1.5");
+        configApp->state = CFG_LOADED_CONFIG;
+        Serial.println("C2");
+      }
+    }
+    else
+    {
+
+      Serial.println("Going to deep sleep");
+
+      LoRa.sleep();
+      pinMode(14, INPUT);
+      LoRa.end();
+
+      esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, 0);
+      esp_sleep_enable_ext0_wakeup((gpio_num_t)dispatchApp->prm_pin_floatswitch, !((bool)digitalRead(dispatchApp->prm_pin_floatswitch)));
+      esp_sleep_enable_timer_wakeup(dispatchApp->prm_send_interval * 10 * 1000 * .8);
+      esp_deep_sleep_start();
+    }
   }
   else
   {

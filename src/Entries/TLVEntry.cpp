@@ -47,6 +47,11 @@ TLVEntry *TLVEntry::CreateFromType(uint8_t type)
         ConfigEntry *pong = new ConfigEntry();
         return (TLVEntry *)pong;
     }
+    case TRANSPORTLAYER_E:
+    {
+        ErrorEntry *pong = new ErrorEntry();
+        return (TLVEntry *)pong;
+    }
     default:
     {
         Serial.println("*TLVEntry::CreateFromType > Received unvalid type");

@@ -48,8 +48,18 @@ public:
     BottomTerminalLayer() : TerminalLayer(BOTTOM){};
 };
 
+enum TopLayerActions {
+    TLA_SLEEP,
+    TLA_IDLE,
+    TLA_RESTART,
+    TLA_LOAD_CONFIG
+};
+
 class TopTerminalLayer : public TerminalLayer
 {
 public:
-    TopTerminalLayer() : TerminalLayer(TOP){};
+    TopLayerActions action;
+  
+    TopTerminalLayer() : TerminalLayer(TOP), action(TLA_IDLE) {};
+    
 };

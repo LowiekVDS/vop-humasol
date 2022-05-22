@@ -2,10 +2,17 @@
 #include "../Entries/Entries.h"
 #include "LoRa.h"
 #include "SPIFFS.h"
+#include "Layers/PhysicalLayer.h"
 
 bool DispatcherApp::step()
 {
     LoRa.receive();
+
+    if (configuring)
+    {
+        return this->action == TLA_IDLE;
+    }
+
     if (millis() - m_lastSent > 500000) // this->prm_send_interval)
     {
 
@@ -14,7 +21,7 @@ bool DispatcherApp::step()
         runLoRaFeedback();
         runPump();
         runBattery();
-        
+
         this->flush();
         return true;
     }
@@ -35,6 +42,56 @@ void DispatcherApp::up(uint8_t *payload, uint8_t length)
 
             this->addEntry(pong);
             this->flush();
+        }
+        else if (entry->type == PONG)
+        {
+            if (configuring)
+            {
+
+                // Config has worked!
+                File configFile = SPIFFS.open("/config/temp_config.json", "r");
+                String config = configFile.readString();
+                configFile.close();
+
+                // Temporary
+                DynamicJsonBuffer jsonBuffer;
+                JsonObject &root = jsonBuffer.parseObject((const char *)config.c_str());
+
+                configFile = SPIFFS.open("/config/config.json", "w");
+
+                String configAsString;
+                root.printTo(configAsString);
+                configFile.print(configAsString);
+                configFile.close();
+
+                this->action = TLA_RESTART;
+            }
+        }
+        else if (entry->type == TRANSPORTLAYER_E)
+        {
+            if (configuring)
+            {
+                // Config has not worked! Reset to defaults...
+                Serial.println("Resetting to default settings...");
+
+                // Config has worked!
+                File configFile = SPIFFS.open("/config/default.json", "r");
+                String config = configFile.readString();
+                configFile.close();
+
+                // Temporary
+                DynamicJsonBuffer jsonBuffer;
+                JsonObject &root = jsonBuffer.parseObject((const char *)config.c_str());
+
+                configFile = SPIFFS.open("/config/config.json", "w");
+
+                String configAsString;
+                root.printTo(configAsString);
+                configFile.print(configAsString);
+                configFile.close();
+
+                this->action = TLA_RESTART;
+            }
         }
         else if (entry->type == LORA_CONFIG)
         {
@@ -77,8 +134,7 @@ void DispatcherApp::up(uint8_t *payload, uint8_t length)
             Serial.println("TTDSFDSFAD");
             Serial.println(convertToString(configEntry->type, 5));
 
-            root["type"] = convertToString(configEntry->type, 5);
-            root["password"] = convertToString(configEntry->password, 16);
+            root["postConfig"] = "true";
 
             configFile = SPIFFS.open("/config/config.json", "w");
 
@@ -88,8 +144,21 @@ void DispatcherApp::up(uint8_t *payload, uint8_t length)
 
             configFile.close();
 
-            // Reboot the ESP
-            ESP.restart();
+            root["type"] = convertToString(configEntry->type, 5);
+            root["password"] = convertToString(configEntry->password, 16);
+
+            configFile = SPIFFS.open("/config/temp_config.json", "w");
+
+            String configAsString2;
+            root.printTo(configAsString2);
+            configFile.print(configAsString2);
+
+            configFile.close();
+
+            // // Reboot the ESP
+            // ESP.restart();
+
+            this->action = TLA_RESTART;
         }
 
         it = entries.erase(it);

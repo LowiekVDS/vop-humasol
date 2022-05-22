@@ -1,5 +1,6 @@
 #include "TransportLayer.h"
 #include "Utils.h"
+#include "Entries/ErrorEntry.h"
 
 void TransportLayer::up(uint8_t *payload, uint8_t length)
 {
@@ -32,7 +33,7 @@ void TransportLayer::up(uint8_t *payload, uint8_t length)
     }
     else
     {
-        Serial.println("[TRANSPORT]> ERROR: Packet not recognized");
+        Serial.println("[TRANSPORT]>TRANSPORTLAYER_E: Packet not recognized");
     }
 };
 
@@ -77,6 +78,21 @@ bool TransportLayer::step()
                     Serial.print("[TRANSPORT]> Dropping packet with PID ");
                     Serial.print(it->first);
                     Serial.println(", Reason: exceeded MAX_RETRANSMISSIONS");
+
+
+                    // Send an error message back
+                    uint8_t new_length = 2 + it->second.transport_data_size;
+                    uint8_t *new_payload = new uint8_t[new_length];
+
+                    new_payload[0] = 9;
+                    new_payload[1] = it->second.transport_data_size;
+
+                    memcpy(new_payload + 2, it->second.transport_data, it->second.transport_data_size);
+
+                    this->upLayer->up(new_payload, new_length);
+
+                    delete[] new_payload;
+
                     auto correspondingPacket = m_sentpackets.erase(it);
                     break;
                 }

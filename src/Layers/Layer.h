@@ -9,7 +9,7 @@ enum LoggingSeverity
 {
     INFO,
     WARNING,
-    ERROR
+   ERROR
 };
 
 /**
@@ -74,7 +74,7 @@ public:
         {
             severityString = "WARNING";
         }
-        else if (severity == ERROR)
+        else if (severity ==ERROR)
         {
             severityString = "ERROR";
         }
