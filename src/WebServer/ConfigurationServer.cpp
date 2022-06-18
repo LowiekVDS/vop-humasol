@@ -58,7 +58,7 @@ void ConfigurationServer::init()
     request->send(200, "application/json", result.c_str()); });
 
   this->server.on("/api/restart", HTTP_GET, [](AsyncWebServerRequest *request)
-                  { //ESP.restart(); 
+                  { ESP.restart(); 
                   });
 
   // Required for CORS

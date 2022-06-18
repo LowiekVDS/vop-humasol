@@ -314,11 +314,16 @@ void loop()
       pinMode(14, INPUT);
       LoRa.end();
 
-      esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, 0);
+      Serial.println((uint64_t) dispatchApp->prm_send_interval * 10 * 1000 * .8);
+      Serial.println(!((bool)digitalRead(dispatchApp->prm_pin_floatswitch)));
+      Serial.println(dispatchApp->prm_pin_floatswitch);
+
+     // esp_sleep_enable_ext0_wakeup(GPIO_NUM_12, 0);
       esp_sleep_enable_ext0_wakeup((gpio_num_t)dispatchApp->prm_pin_floatswitch, !((bool)digitalRead(dispatchApp->prm_pin_floatswitch)));
-      esp_sleep_enable_timer_wakeup(dispatchApp->prm_send_interval * 10 * 1000 * .8);
+      esp_sleep_enable_timer_wakeup(15 * 60 *  1000 * 1000);
       esp_deep_sleep_start();
     }
+
   }
   else
   {
