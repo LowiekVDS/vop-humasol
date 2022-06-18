@@ -66,8 +66,16 @@ void setup()
   }
 }
 
+int counter = 0;
+
 void loop()
 {
+
+  String message = "hello " + String(counter);
+
+  networkStack.getTopLayer()->down((uint8_t*) message.c_str(), strlen(message.c_str()));
+  delay(1000);
+
   if (configServer->isInitialized())
   {
     configServer->dnsServer.processNextRequest();

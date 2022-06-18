@@ -15,7 +15,7 @@ export interface AdvancedOptionsData {
 }
 
 const supportedBandwidth = [
-  7.8, 10.4, 15.6, 20.8, 31.2, 41.7, 62.5, 125, 250, 500,
+  7800, 10400, 15600, 20800, 31200, 41700, 62500, 125000, 250000, 500000,
 ];
 
 const supportedSpread = [7, 8, 9, 10, 11, 12];
@@ -57,6 +57,15 @@ export default function AdvancedOptions(props: AdvancedOptions) {
         <FormattedMessage
           defaultMessage={"Advanced settings"}
           id={"Advanced settings"}
+        />
+      </p>
+
+      <p className="mt-4 w-1/2 mx-auto">
+        <FormattedMessage
+          defaultMessage={
+            "Based on your previous input we have determined what communication settings you should use. In most cases these are fine, but here you can edit them if required."
+          }
+          id={"advancedsettings"}
         />
       </p>
 
@@ -107,7 +116,7 @@ export default function AdvancedOptions(props: AdvancedOptions) {
         >
           {supportedBandwidth.map((bw) => (
             <MenuItem key={bw} value={bw}>
-              {bw} kHz
+              {bw/1000} kHz
             </MenuItem>
           ))}
         </Select>

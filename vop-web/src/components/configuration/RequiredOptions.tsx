@@ -1,6 +1,17 @@
-import { MenuItem, Select, TextField } from "@mui/material";
+import {
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
+  TextField,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import Button from "../Button";
 
 export interface RequiredOptions {
@@ -9,18 +20,22 @@ export interface RequiredOptions {
 }
 
 export interface RequiredOptionsData {
-  type?: "Receiver" | "Transmitter"; //'pump' | 'floatswitch' | 'waterlevelsensor'
+  type?: "contr" | "dispa";
   password?: string;
+  distance?: number;
+  LoS?: boolean;
 }
 
 const nodeTypes = [
-  { type: "Receiver", label: "Receiver" },
-  { type: "Transmitter", label: "Transmitter" },
+  { type: "contr", label: "Pump" },
+  { type: "dispa", label: "Float Switch" },
 ];
 
 export default function RequiredOptions(props: RequiredOptions) {
   const [canContinue, setCanContinue] = useState<boolean>(false);
   const [data, setData] = useState<RequiredOptionsData>(props.data ?? {});
+
+  const intl = useIntl();
 
   const updateData = (field: keyof RequiredOptionsData, value: any) => {
     const newData = { ...data };
@@ -39,11 +54,14 @@ export default function RequiredOptions(props: RequiredOptions) {
       return;
     }
 
+    if (!data.distance) {
+      return;
+    }
+
     setCanContinue(true);
   }, [data]);
 
   useEffect(() => {
-  
     let propData: any = {};
     if (props.data) {
       propData = props.data as any;
@@ -57,7 +75,6 @@ export default function RequiredOptions(props: RequiredOptions) {
       setData(propData as any);
     }
   }, [props.data]);
-
 
   return (
     <>
@@ -93,6 +110,22 @@ export default function RequiredOptions(props: RequiredOptions) {
           onChange={(e) => updateData("password", e.target.value)}
           type="password"
         />
+
+        <p className="font-bold text-gray-600">
+          <FormattedMessage
+            defaultMessage={"Estimated distance [m]"}
+            id={"Estimated distance [m]"}
+          />
+        </p>
+        <TextField
+          value={data.distance ?? ""}
+          onChange={(e) => updateData("distance", e.target.value)}
+          type="number"
+        />
+
+        <FormGroup>
+          <FormControlLabel control={<Checkbox value={data.LoS} onChange={(e) => updateData("LoS", e.target.value)} />} label={intl.formatMessage({defaultMessage: "Line of Sight", id: "Line of Sight"})} />
+        </FormGroup>
 
         <Button
           onClick={() => props.onContinue(data)}

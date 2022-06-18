@@ -28,8 +28,11 @@ function MainView() {
         <Button onClick={() => window.location.href = "#/monitor"}>
           <FormattedMessage defaultMessage={"monitor"} id={"monitor"} />
         </Button>
-        <Button className="mt-6" color="error">
+        <Button className="mt-6" color="error" onClick={() => window.location.href = "#/restart"}>
           <FormattedMessage defaultMessage={"restart"} id={"restart"} />
+        </Button>
+        <Button className="mt-6" color="error" onClick={() => window.location.href = "#/reset"}>
+          <FormattedMessage defaultMessage={"reset"} id={"reset"} />
         </Button>
       </div>
     </>
